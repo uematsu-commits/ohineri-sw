@@ -42,10 +42,7 @@ a{color:var(--ink2)}
 <div class="sec">1. チームを選ぶ</div>
 <div class="teams" id="teams"></div>
 <div id="teamInfo" style="display:none;margin-top:10px;background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7"><b id="tiName" style="color:var(--gold)"></b><span id="tiDesc" style="color:var(--ink)"></span></div>
-<div class="sec">2. ひとことメッセージ（任意）</div>
-<textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
-<div style="margin-top:8px"><input id="name" maxlength="20" placeholder="お名前（任意・空欄で匿名）"></div>
-<div class="sec">3. 応援を投げる（何回でもOK）</div>
+<div class="sec">2. 応援を投げる（何回でもOK）</div>
 <div class="acts">
   <button class="act" data-k="cheer">👏 応援してる！</button>
   <button class="act" data-k="user">🙋 利用者になりたい</button>
@@ -54,6 +51,9 @@ a{color:var(--ink2)}
   <button class="act coin" data-k="coin" id="coinBtn">🔥 エールを投げる</button>
 </div>
 <div class="coincount" id="coinCount"></div>
+<div class="sec">3. ひとことメッセージ（任意・一緒に届きます）</div>
+<textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
+<div style="margin-top:8px"><input id="name" maxlength="20" placeholder="お名前（任意・空欄で匿名）"></div>
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
 <div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
 <p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a href="results.html">結果ページ</a></p>
