@@ -28,6 +28,7 @@ h1{font-size:22px;margin-bottom:4px}
 <div id="out">読み込み中…</div>
 <script>
 const TEAMS = ["くびMIKAN社中","友達の輪","じぶん時間","うちのまりあは面倒くさがり","高校生","たちまちエンディングノート","バビロンフィーバー","山P","ピッチャー"];
+const openTeams = new Set();
 const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール"};
 async function load(){
   try{
@@ -67,13 +68,25 @@ async function load(){
       for(const k in b.kinds){ const s=document.createElement('span'); s.textContent=(KINDS[k]||k)+' × '+b.kinds[k]; ks.appendChild(s); }
       card.appendChild(ks);
       if(b.msgs.length){
+        const isOpen = openTeams.has(t);
+        const tg = document.createElement('button');
+        tg.style.cssText='margin-top:10px;width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;color:var(--gold);cursor:pointer;text-align:left';
+        tg.textContent = (isOpen?'▾':'▸')+' 💬 コメント '+b.msgs.length+' 件を'+(isOpen?'閉じる':'表示');
         const ms = document.createElement('div'); ms.className='msgs';
-        for(const m of b.msgs.slice(-30)){
+        ms.style.display = isOpen ? '' : 'none';
+        for(const m of b.msgs.slice(-100)){
           const d=document.createElement('div'); d.className='m';
           const who=document.createElement('b'); who.textContent=(m.name||'匿名')+'： ';
           d.appendChild(who); d.appendChild(document.createTextNode(m.message));
           ms.appendChild(d);
         }
+        tg.onclick=()=>{
+          if(openTeams.has(t)) openTeams.delete(t); else openTeams.add(t);
+          const open = openTeams.has(t);
+          ms.style.display = open ? '' : 'none';
+          tg.textContent = (open?'▾':'▸')+' 💬 コメント '+b.msgs.length+' 件を'+(open?'閉じる':'表示');
+        };
+        card.appendChild(tg);
         card.appendChild(ms);
       }
       out.appendChild(card);
