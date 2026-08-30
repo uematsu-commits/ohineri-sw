@@ -140,6 +140,12 @@ async function pollFeed(){
       const to=document.createElement('span'); to.style.color='var(--gold)'; to.style.fontWeight='800'; to.textContent=' → '+row.team+' ';
       const k=document.createElement('span'); k.style.color='var(--ink2)'; k.textContent=KINDS_L[row.kind]||row.kind;
       d.appendChild(who); d.appendChild(to); d.appendChild(k);
+      if(row.created_at){
+        const tt=document.createElement('span');
+        tt.style.cssText='float:right;color:var(--ink2);font-size:10.5px';
+        try{ tt.textContent=new Date(row.created_at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}); }catch(e){}
+        d.appendChild(tt);
+      }
       if(row.message){const m=document.createElement('div'); m.textContent='「'+row.message+'」'; d.appendChild(m);}
       box.prepend(d);
       while(box.children.length>8) box.removeChild(box.lastChild);
