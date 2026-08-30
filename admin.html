@@ -1,0 +1,234 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ビジスタ 主催者コンソール</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" integrity="sha384-lQXOAyZwHXE55JFyrOMB7nY2Wv+m5ZWNtJcHrd1rceRQXAYNLak8ukN5TjBTcIwz" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#0f1013;--card:#1c1d24;--card2:#24252e;--ink:#f2efe6;--ink2:#8f8d97;--gold:#e8b04b;--gold-deep:#c8871d;--red:#e0454f;--line:#2c2d35}
+*{box-sizing:border-box;margin:0;font-family:'Hiragino Sans','Noto Sans JP',sans-serif}
+body{background:var(--bg);color:var(--ink);min-height:100vh;padding:24px 18px 80px;max-width:860px;margin:0 auto}
+.logo{font-weight:900;font-size:22px}.logo b{color:var(--gold)}
+.badge{font-size:11px;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:2px 8px;vertical-align:middle;font-weight:800}
+.sec{font-size:12px;font-weight:800;letter-spacing:.15em;color:var(--gold);margin:22px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+input,textarea,select{width:100%;background:var(--card2);border:1.5px solid var(--line);border-radius:10px;color:var(--ink);padding:10px 13px;font-size:13.5px;font-family:inherit}
+textarea{height:130px;resize:vertical;line-height:1.7}
+button{font-family:inherit;cursor:pointer}
+.btn{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;border:0;font-size:13.5px;font-weight:900;padding:11px 18px;border-radius:10px}
+.btn2{background:var(--card2);color:var(--ink);border:1.5px solid var(--line);font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:10px}
+.btn2.on{border-color:var(--gold);color:var(--gold);background:#221d12}
+.btnDanger{background:none;border:1.5px solid var(--red);color:var(--red);font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tops{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.top{background:var(--card2);border-radius:10px;padding:10px;text-align:center}
+.top .k{font-size:10px;color:var(--ink2)}.top .v{font-size:20px;font-weight:900;color:var(--gold)}
+.feedItem{background:var(--card2);border-radius:9px;padding:8px 12px;font-size:12.5px;line-height:1.5;margin-top:6px;display:flex;gap:8px;align-items:flex-start}
+.feedItem .del{margin-left:auto;background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;font-size:11px;padding:3px 9px;flex-shrink:0}
+.hint{font-size:11px;color:var(--ink2);line-height:1.7;margin-top:6px}
+a{color:var(--gold)}
+.urlrow{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px}
+.urlrow code{background:var(--card2);border-radius:7px;padding:5px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:var(--ink2)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);background:var(--gold);color:#161105;font-weight:900;font-size:13px;border-radius:99px;padding:10px 22px;transition:transform .25s;z-index:9}
+#toast.on{transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="logo">ビジスタ<b>.</b> 主催者コンソール <span class="badge">ADMIN</span></div>
+
+<div id="login" class="card" style="margin-top:18px">
+  <div style="font-weight:800;margin-bottom:8px">管理キー</div>
+  <div class="row"><input id="keyInput" type="password" placeholder="管理キーを入力" style="flex:1;width:auto"><button class="btn" onclick="doLogin()">ログイン</button></div>
+</div>
+
+<div id="console" style="display:none">
+  <div class="sec">イベントを選ぶ</div>
+  <div class="card">
+    <div class="row" id="evList"></div>
+  </div>
+
+  <div id="evPanel" style="display:none">
+    <div class="sec">配布用リンク・QR</div>
+    <div class="card">
+      <div class="row" style="align-items:flex-start">
+        <div style="flex:1;min-width:260px">
+          <div class="urlrow">👥 観客<code id="urlApp"></code><button class="btn2" onclick="copyUrl('urlApp')">コピー</button></div>
+          <div class="urlrow">🖥 スクリーン<code id="urlScreen"></code><button class="btn2" onclick="copyUrl('urlScreen')">コピー</button></div>
+          <div class="urlrow">📊 結果<code id="urlResults"></code><button class="btn2" onclick="copyUrl('urlResults')">コピー</button></div>
+        </div>
+        <div style="text-align:center"><div id="qr" style="background:#fff;padding:8px;border-radius:10px;display:inline-block"></div><div class="hint">観客ページQR</div></div>
+      </div>
+    </div>
+
+    <div class="sec">ライブ運営</div>
+    <div class="card">
+      <div style="font-weight:800;font-size:13px;margin-bottom:8px">▶ いま発表中のチーム（観客ページに反映）</div>
+      <div class="row" id="curTeamBtns"></div>
+      <div class="tops" style="margin-top:14px" id="statTiles"></div>
+      <div style="font-weight:800;font-size:13px;margin:16px 0 2px">💬 応援フィード（不適切な投稿は削除できます）</div>
+      <div id="adminFeed"></div>
+    </div>
+
+    <div class="sec">イベント設定</div>
+    <div class="card">
+      <div class="row" style="margin-bottom:10px">
+        <button class="btn2" id="statusBtn" onclick="toggleStatus()"></button>
+        <button class="btn2" onclick="exportCsv()">📥 CSVエクスポート</button>
+        <button class="btnDanger" onclick="resetEvent()">🗑 データをリセット（アーカイブ後に全削除）</button>
+      </div>
+      <div style="font-weight:800;font-size:13px;margin-bottom:6px">チーム編集（1行1チーム：チーム名 | 概要）</div>
+      <textarea id="teamsEdit"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn" onclick="saveTeams()">チーム構成を保存</button></div>
+    </div>
+  </div>
+
+  <div class="sec">新しいイベントを作る</div>
+  <div class="card">
+    <div class="row" style="margin-bottom:8px">
+      <input id="newName" placeholder="イベント名（例：青森ピッチナイト vol.1）" style="flex:2;width:auto">
+      <input id="newSlug" placeholder="英数字ID（例：aomori-pitch-1）" style="flex:1;width:auto">
+    </div>
+    <textarea id="newTeams" placeholder="1行1チームで入力：&#10;チームA | サービス概要...&#10;チームB | サービス概要..."></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" onclick="createEvent()">イベントを作成（URL即発行）</button></div>
+    <div class="hint">作成すると観客・スクリーン・結果ページのURLとQRが即使えます。</div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
+const PAGES = location.origin + location.pathname.replace(/admin\.html$/,'');
+let KEY = '', EVENTS = [], sel = null, feedLast = 0;
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1800);}
+async function admin(path, body){
+  const r = await fetch(API+'/api/admin/'+path, {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:KEY,...body})});
+  return r.json();
+}
+async function doLogin(){
+  KEY = document.getElementById('keyInput').value.trim() || KEY;
+  const r = await fetch(API+'/api/admin/list?key='+encodeURIComponent(KEY));
+  if(!r.ok){ toast('キーが違います'); return; }
+  EVENTS = await r.json();
+  try{ localStorage.setItem('oh_admin_key', KEY); }catch(e){}
+  document.getElementById('login').style.display='none';
+  document.getElementById('console').style.display='block';
+  renderEvList();
+}
+function renderEvList(){
+  const el = document.getElementById('evList'); el.innerHTML='';
+  EVENTS.forEach(ev=>{
+    const b=document.createElement('button');
+    b.className='btn2'+(sel&&sel.slug===ev.slug?' on':'');
+    b.textContent=(ev.status==='open'?'🟢 ':'🔒 ')+ev.name;
+    b.onclick=()=>selectEvent(ev.slug);
+    el.appendChild(b);
+  });
+}
+function selectEvent(slug){
+  sel = EVENTS.find(e=>e.slug===slug); if(!sel) return;
+  feedLast = 0; document.getElementById('adminFeed').innerHTML='';
+  document.getElementById('evPanel').style.display='block';
+  renderEvList(); renderPanel();
+}
+function renderPanel(){
+  const appUrl = PAGES+'app.html?event='+sel.slug;
+  document.getElementById('urlApp').textContent = appUrl;
+  document.getElementById('urlScreen').textContent = PAGES+'app-screen.html?event='+sel.slug;
+  document.getElementById('urlResults').textContent = PAGES+'app-results.html?event='+sel.slug;
+  const q = qrcode(0,'M'); q.addData(appUrl); q.make();
+  document.getElementById('qr').innerHTML = q.createImgTag(4,4);
+  document.getElementById('statusBtn').textContent = sel.status==='open' ? '🟢 受付中（タップで締め切る）' : '🔒 終了（タップで再開する）';
+  const ct = document.getElementById('curTeamBtns'); ct.innerHTML='';
+  const noneBtn = document.createElement('button');
+  noneBtn.className='btn2'+(!sel.current_team?' on':''); noneBtn.textContent='（なし）';
+  noneBtn.onclick=()=>setCurrent(''); ct.appendChild(noneBtn);
+  sel.teams.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='btn2'+(sel.current_team===t.name?' on':'');
+    b.textContent=(sel.current_team===t.name?'▶ ':'')+t.name;
+    b.onclick=()=>setCurrent(t.name);
+    ct.appendChild(b);
+  });
+  document.getElementById('teamsEdit').value = sel.teams.map(t=>t.name+' | '+(t.info||'')).join('\n');
+}
+async function setCurrent(name){
+  const r = await admin('update_event',{slug:sel.slug,current_team:name});
+  if(r.ok){ sel.current_team=name; renderPanel(); toast(name?('発表中: '+name):'発表中チームをクリアしました'); }
+}
+async function toggleStatus(){
+  const next = sel.status==='open'?'closed':'open';
+  if(next==='closed' && !confirm('応援の受付を締め切ります。よろしいですか？')) return;
+  const r = await admin('update_event',{slug:sel.slug,status:next});
+  if(r.ok){ sel.status=next; renderPanel(); renderEvList(); toast(next==='open'?'受付を再開しました':'受付を締め切りました'); }
+}
+async function saveTeams(){
+  const teams = document.getElementById('teamsEdit').value.split('\n').map(l=>{
+    const i = l.indexOf('|');
+    const name = (i<0?l:l.slice(0,i)).trim(), info = i<0?'':l.slice(i+1).trim();
+    return name?{name,info}:null;
+  }).filter(Boolean);
+  if(!teams.length){ toast('チームが空です'); return; }
+  const r = await admin('update_event',{slug:sel.slug,teams});
+  if(r.ok){ sel.teams=teams; renderPanel(); toast('チーム構成を保存しました'); }
+}
+async function createEvent(){
+  const name = document.getElementById('newName').value.trim();
+  const slug = document.getElementById('newSlug').value.trim();
+  const teams = document.getElementById('newTeams').value.split('\n').map(l=>{
+    const i = l.indexOf('|');
+    const nm = (i<0?l:l.slice(0,i)).trim(), info = i<0?'':l.slice(i+1).trim();
+    return nm?{name:nm,info}:null;
+  }).filter(Boolean);
+  if(!name||!slug||!teams.length){ toast('イベント名・ID・チームをすべて入力してください'); return; }
+  const r = await admin('create_event',{name,slug,teams});
+  if(r.ok){ toast('作成しました'); document.getElementById('newName').value=''; document.getElementById('newSlug').value=''; document.getElementById('newTeams').value=''; await refreshList(r.slug); }
+  else toast('作成に失敗: '+(r.error||''));
+}
+async function refreshList(selectSlug){
+  const r = await fetch(API+'/api/admin/list?key='+encodeURIComponent(KEY));
+  EVENTS = await r.json(); renderEvList();
+  if(selectSlug) selectEvent(selectSlug);
+}
+async function resetEvent(){
+  if(!confirm('「'+sel.name+'」の応援データをすべて削除します（アーカイブに退避してから削除）。よろしいですか？')) return;
+  const r = await admin('reset',{event:sel.slug});
+  if(r.ok){ toast(r.archived+'件をアーカイブして空にしました'); feedLast=0; document.getElementById('adminFeed').innerHTML=''; }
+}
+async function exportCsv(){
+  const r = await fetch(API+'/api/all?event='+encodeURIComponent(sel.slug));
+  const rows = await r.json();
+  const escq = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv = '﻿id,team,kind,message,name,created_at\n' + rows.map(x=>[x.id,x.team,x.kind,x.message,x.name,x.created_at].map(escq).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = sel.slug+'_supports.csv'; a.click();
+}
+const KINDS = {"cheer":"👏","user":"🙋","intro":"🤝","spread":"📣","coin":"🔥"};
+async function pollLive(){
+  if(sel){
+    try{
+      const sr = await fetch(API+'/api/stats?event='+encodeURIComponent(sel.slug));
+      const s = await sr.json();
+      const tiles = [['応援',s.total+'件'],['関係人口',s.uniq+'人'],['熱量(今)',s.heat+'/100'],['ピーク',s.peak+'/100']];
+      const el = document.getElementById('statTiles'); el.innerHTML='';
+      tiles.forEach(([k,v])=>{ const d=document.createElement('div'); d.className='top'; d.innerHTML='<div class="k">'+k+'</div><div class="v">'+v+'</div>'; el.appendChild(d); });
+      const fr = await fetch(API+'/api/feed?event='+encodeURIComponent(sel.slug)+'&after='+feedLast);
+      const rows = await fr.json();
+      const box = document.getElementById('adminFeed');
+      for(const row of rows){
+        feedLast = Math.max(feedLast, row.id);
+        const d = document.createElement('div'); d.className='feedItem'; d.dataset.id=row.id;
+        const body = document.createElement('div');
+        const b = document.createElement('b'); b.textContent=(row.name||'匿名');
+        const sp = document.createElement('span'); sp.style.color='var(--gold)'; sp.style.fontWeight='800'; sp.textContent=' → '+row.team+' '+(KINDS[row.kind]||'');
+        body.appendChild(b); body.appendChild(sp);
+        if(row.message){ const m=document.createElement('div'); m.textContent='「'+row.message+'」'; body.appendChild(m); }
+        const del = document.createElement('button'); del.className='del'; del.textContent='削除';
+        del.onclick=async()=>{ if(!confirm('この投稿を削除しますか？')) return; const r=await admin('delete_post',{id:row.id}); if(r.ok){ d.remove(); toast('削除しました'); } };
+        d.appendChild(body); d.appendChild(del);
+        box.prepend(d);
+        while(box.children.length>25) box.removeChild(box.lastChild);
+      }
+    }catch(e){}
+  }
+  setTimeout(pollLive, 4000);
+}
+try{ const k = localStorage.getItem('oh_admin_key'); if(k){ KEY=k; doLogin(); } }catch(e){}
+document.getElementById('keyInput').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+pollLive();
+</script></body></html>
