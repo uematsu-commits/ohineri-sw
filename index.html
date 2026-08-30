@@ -12,8 +12,8 @@ body{padding:18px 16px 40px;max-width:520px;margin:0 auto}
 h1{font-size:22px;margin-bottom:2px}
 .sub{color:var(--ink2);font-size:12px;margin-bottom:16px;line-height:1.6}
 .sec{font-size:12px;font-weight:800;letter-spacing:.15em;color:var(--gold);margin:18px 0 8px}
-.teams{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.team{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:13px 8px;font-size:15px;font-weight:800;color:var(--ink);text-align:center;cursor:pointer}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.team{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 4px;font-size:13.5px;font-weight:800;color:var(--ink);text-align:center;cursor:pointer}
 .team.sel{border-color:var(--gold);background:#221d12;color:var(--gold)}
 textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:14px;height:64px;resize:none}
 textarea:focus{outline:2px solid var(--gold)}
@@ -32,6 +32,7 @@ a{color:var(--ink2)}
 <p class="sub">応援したいチームを選んで、応援を投げてください。応援は会場スクリーンに流れ、発表チームに届きます。匿名OK・本物のお金は使いません。</p>
 <div class="sec">1. チームを選ぶ</div>
 <div class="teams" id="teams"></div>
+<div id="teamInfo" style="display:none;margin-top:10px;background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7"><b id="tiName" style="color:var(--gold)"></b><span id="tiDesc" style="color:var(--ink)"></span></div>
 <div class="sec">2. ひとことメッセージ（任意）</div>
 <textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
 <div style="margin-top:8px"><input id="name" maxlength="20" placeholder="お名前（任意・空欄で匿名）"></div>
@@ -44,6 +45,8 @@ a{color:var(--ink2)}
   <button class="act coin" data-k="coin" id="coinBtn">🪙 おひねりを投げる</button>
 </div>
 <div class="coincount" id="coinCount"></div>
+<div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
+<div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
 <p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a href="results.html">結果ページ</a></p>
 <div id="toast">送りました！</div>
 <script>
@@ -58,9 +61,18 @@ TEAMS.forEach(t=>{
   const b=document.createElement('button');
   b.className='team'+(t===team?' sel':'');
   b.textContent=t;
-  b.onclick=()=>{team=t;try{localStorage.setItem('oh_team',t)}catch(e){};document.querySelectorAll('.team').forEach(x=>x.classList.toggle('sel',x.textContent===t))};
+  b.onclick=()=>{team=t;try{localStorage.setItem('oh_team',t)}catch(e){};document.querySelectorAll('.team').forEach(x=>x.classList.toggle('sel',x.textContent===t));showInfo(t);};
   teamsEl.appendChild(b);
 });
+function showInfo(t){
+  const p=document.getElementById('teamInfo');
+  const d=TEAM_INFO[t]||'';
+  if(!d){p.style.display='none';return;}
+  document.getElementById('tiName').textContent=t+'： ';
+  document.getElementById('tiDesc').textContent=d;
+  p.style.display='block';
+}
+if(team) showInfo(team);
 function updCoins(){
   document.getElementById('coinCount').textContent = '応援チケット 残り '+coins+' 枚';
   document.getElementById('coinBtn').disabled = coins<=0;
@@ -83,5 +95,28 @@ document.querySelectorAll('.act').forEach(b=>b.onclick=async()=>{
   }catch(e){ toast('送信に失敗しました。電波を確認してもう一度'); }
   busy=false;
 });
+const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🪙 おひねり'};
+let feedLast = 0;
+async function pollFeed(){
+  try{
+    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?after='+feedLast);
+    const rows = await r.json();
+    const box = document.getElementById('liveFeed');
+    for(const row of rows){
+      feedLast = Math.max(feedLast, row.id);
+      const d = document.createElement('div');
+      d.style.cssText='background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.55'+(row.kind==='coin'?';border:1px solid var(--gold)':'');
+      const who=document.createElement('b'); who.textContent=(row.name||'匿名');
+      const to=document.createElement('span'); to.style.color='var(--gold)'; to.style.fontWeight='800'; to.textContent=' → '+row.team+' ';
+      const k=document.createElement('span'); k.style.color='var(--ink2)'; k.textContent=KINDS_L[row.kind]||row.kind;
+      d.appendChild(who); d.appendChild(to); d.appendChild(k);
+      if(row.message){const m=document.createElement('div'); m.textContent='「'+row.message+'」'; d.appendChild(m);}
+      box.prepend(d);
+      while(box.children.length>8) box.removeChild(box.lastChild);
+    }
+  }catch(e){}
+  setTimeout(pollFeed, 3500);
+}
+pollFeed();
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1600);}
 </script></body></html>
