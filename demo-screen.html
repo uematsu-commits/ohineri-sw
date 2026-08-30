@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ビジスタ スクリーン</title><style>
+<title>ビジスタ デモ スクリーン</title><style>
 :root{--bg:#0f1013;--card:#1c1d24;--card2:#24252e;--ink:#f2efe6;--ink2:#8f8d97;--gold:#e8b04b;--gold-deep:#c8871d;--red:#e0454f;--line:#2c2d35}
 *{box-sizing:border-box;margin:0;font-family:'Hiragino Sans','Noto Sans JP',sans-serif}
 body{background:var(--bg);color:var(--ink);min-height:100vh}
@@ -34,13 +34,13 @@ h1{font-size:26px}
   <div class="bars" id="bars"></div>
 </div>
 <script>
-const TEAMS = ["くびMIKAN社中","友達の輪","じぶん時間","うちのまりあは面倒くさがり","高校生","たちまちエンディングノート","バビロンフィーバー","山P","ピッチャー"];
+const TEAMS = ["ツガルシェア","りんご発酵ラボ","ねぶた遠隔観覧","雪かきマッチング","縄文ツーリズム","Uターン人材バンク"];
 const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール"};
 let lastId = 0;
 const feed = document.getElementById('feed');
 async function tick(){
   try{
-    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?event=sw-hiroshima&after='+lastId);
+    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?event=demo&after='+lastId);
     const rows = await r.json();
     for(const row of rows){
       lastId = Math.max(lastId, row.id);
@@ -54,7 +54,7 @@ async function tick(){
       feed.appendChild(d);
       while(feed.children.length>12) feed.removeChild(feed.firstChild);
     }
-    const rr = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/stats?event=sw-hiroshima');
+    const rr = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/stats?event=demo');
     const agg = await rr.json();
     document.getElementById('total').textContent = agg.total;
     document.getElementById('heat').textContent = agg.heat;

@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ビジスタ 結果</title><style>
+<title>ビジスタ デモ 結果</title><style>
 :root{--bg:#0f1013;--card:#1c1d24;--card2:#24252e;--ink:#f2efe6;--ink2:#8f8d97;--gold:#e8b04b;--gold-deep:#c8871d;--red:#e0454f;--line:#2c2d35}
 *{box-sizing:border-box;margin:0;font-family:'Hiragino Sans','Noto Sans JP',sans-serif}
 body{background:var(--bg);color:var(--ink);min-height:100vh}
@@ -23,17 +23,17 @@ h1{font-size:22px;margin-bottom:4px}
 .m b{color:var(--gold);font-weight:700;font-size:11.5px}
 </style></head><body>
 <h1 class="logo">ビジスタ<b>.</b> 結果</h1>
-<p class="sub">Startup Weekend 広島 — 最終発表への会場応援の記録。10秒ごとに自動更新。</p>
+<p class="sub">ビジスタ体験デモの応援集計。10秒ごとに自動更新。</p>
 <div style="display:flex;gap:10px;margin-bottom:16px" id="tops"></div>
 <div id="out">読み込み中…</div>
 <script>
-const TEAMS = ["くびMIKAN社中","友達の輪","じぶん時間","うちのまりあは面倒くさがり","高校生","たちまちエンディングノート","バビロンフィーバー","山P","ピッチャー"];
+const TEAMS = ["ツガルシェア","りんご発酵ラボ","ねぶた遠隔観覧","雪かきマッチング","縄文ツーリズム","Uターン人材バンク"];
 const openTeams = new Set();
 const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール"};
 async function load(){
   try{
-    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/all?event=sw-hiroshima');
-    const sr = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/stats?event=sw-hiroshima');
+    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/all?event=demo');
+    const sr = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/stats?event=demo');
     const stats = await sr.json();
     const tops=document.getElementById('tops'); tops.innerHTML='';
     [['応援 合計',stats.total+' 件'],['関係人口（応援した人数）',stats.uniq+' 人'],['ピーク熱量',stats.peak+' /100']].forEach(([k,v])=>{

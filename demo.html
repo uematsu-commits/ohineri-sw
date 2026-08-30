@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ビジスタ — 応援を投げよう</title><style>
+<title>ビジスタ デモ — 応援を投げよう</title><style>
 :root{--bg:#0f1013;--card:#1c1d24;--card2:#24252e;--ink:#f2efe6;--ink2:#8f8d97;--gold:#e8b04b;--gold-deep:#c8871d;--red:#e0454f;--line:#2c2d35}
 *{box-sizing:border-box;margin:0;font-family:'Hiragino Sans','Noto Sans JP',sans-serif}
 body{background:var(--bg);color:var(--ink);min-height:100vh}
@@ -37,9 +37,8 @@ a{color:var(--ink2)}
 @keyframes floatUp{0%{transform:translateY(0);opacity:0}8%{opacity:1}75%{opacity:1}100%{transform:translateY(-82vh);opacity:0}}
 @keyframes wobble{from{transform:translateX(-7px) rotate(-4deg)}to{transform:translateX(7px) rotate(4deg)}}
 </style></head><body>
-<div style="background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7;margin-bottom:14px">Startup Weekend 広島 2026 は終了しました。応援の受付は締め切っています。<br>📊 <a href="report.html" style="color:var(--gold);font-weight:800">成果レポートを見る</a>　🎮 <a href="demo.html" style="color:var(--gold);font-weight:800">体験デモで遊ぶ</a></div>
-<h1 class="logo">ビジスタ<b>.</b></h1>
-<p class="sub">応援したいチームを選んで、応援を投げてください。応援は会場スクリーンに流れ、発表チームに届きます。匿名OK・本物のお金は使いません。</p>
+<h1 class="logo">ビジスタ<b>.</b> <span style="font-size:12px;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:2px 8px;vertical-align:middle">DEMO</span></h1>
+<p class="sub">ビジコン活性化ツール「ビジスタ」の体験デモです。チームは架空です。応援を送るとスクリーンにリアルタイムで流れます。匿名OK・本物のお金は使いません。</p>
 <div class="sec">1. チームを選ぶ</div>
 <div class="teams" id="teams"></div>
 <div id="teamInfo" style="display:none;margin-top:10px;background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7"><b id="tiName" style="color:var(--gold)"></b><span id="tiDesc" style="color:var(--ink)"></span></div>
@@ -56,24 +55,21 @@ a{color:var(--ink2)}
 <button class="send" id="sendBtn">🚀 送信（何回でもOK）</button>
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
 <div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
-<p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a href="results.html">結果ページ</a></p>
+<p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a href="demo-results.html">結果ページ</a>／<a href="demo-screen.html">スクリーン表示</a></p>
 <div id="floatLayer"></div>
 <div id="toast">送りました！</div>
 <script>
-const TEAMS = ["くびMIKAN社中", "友達の輪", "じぶん時間", "うちのまりあは面倒くさがり", "高校生", "たちまちエンディングノート", "バビロンフィーバー", "山P", "ピッチャー"];
+const TEAMS = ["ツガルシェア", "りんご発酵ラボ", "ねぶた遠隔観覧", "雪かきマッチング", "縄文ツーリズム", "Uターン人材バンク"];
 const TEAM_INFO = {
-  "山P": "『きっかけラボ』— 失敗の練習が出来る教室",
-  "うちのまりあは面倒くさがり": "『Sassy』— 恋愛の悩みの解決を手助けするサイト",
-  "くびMIKAN社中": "『海の学校』— 瀬戸内の限界集落・久比で、子どもたちが“生きる力”と“暮らしの感覚”を取り戻す自然教育プログラム",
-  "高校生": "『大会実績を、\"すごい\"で終わらせない』— 優秀な高校生と企業との接点を作る",
-  "じぶん時間": "『DINO SOLO CLUB』— ひとりを、冒険に変える。",
-  "たちまちエンディングノート": "『なりたい自分に変身！テクマクマヤコン』— 老後の不安を言語化して次に何をすればいいか分かる",
-  "友達の輪": "『RETREAT MAKERS』— 仲間の輪を広げるためのリクルートイベント",
-  "バビロンフィーバー": "『勢い研究所』— 新入社員（社会人1年目から3年目）の「勢い」を加速させるためのサービス",
-  "ピッチャー": "『ビジスタ』— ビジコン会場に、マツダスタジアムの盛り上がりを。ビジコン管理・活性化ツール（このアプリを作ったチームです）"
+  "ツガルシェア": "『ツガルシェア』— 実家の空き家を滞在拠点としてシェア活用（デモ用の架空チームです）",
+  "りんご発酵ラボ": "『りんご発酵ラボ』— 規格外りんごから発酵食品を開発（デモ用の架空チームです)",
+  "ねぶた遠隔観覧": "『ねぶた遠隔観覧』— ねぶた祭をオンラインで臨場観覧（デモ用の架空チームです）",
+  "雪かきマッチング": "『雪かきマッチング』— 雪かきの担い手と高齢世帯を繋ぐ（デモ用の架空チームです）",
+  "縄文ツーリズム": "『縄文ツーリズム』— 縄文遺跡群をめぐる体験型観光（デモ用の架空チームです）",
+  "Uターン人材バンク": "『Uターン人材バンク』— Uターン希望者と地元企業のマッチング（デモ用の架空チームです）"
 };
 let team = null;
-try{ team = localStorage.getItem('oh_team'); }catch(e){}
+try{ team = localStorage.getItem('oh_demo_team'); }catch(e){}
 if(team && !TEAMS.includes(team)) team = null;
 let dev='';try{dev=localStorage.getItem('oh_dev')||'';if(!dev){dev=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('oh_dev',dev);}}catch(e){dev='anon'+Math.floor(Math.random()*1e9);}
 const teamsEl = document.getElementById('teams');
@@ -81,7 +77,7 @@ TEAMS.forEach(t=>{
   const b=document.createElement('button');
   b.className='team'+(t===team?' sel':'');
   b.textContent=t;
-  b.onclick=()=>{team=t;try{localStorage.setItem('oh_team',t)}catch(e){};document.querySelectorAll('.team').forEach(x=>x.classList.toggle('sel',x.textContent===t));showInfo(t);};
+  b.onclick=()=>{team=t;try{localStorage.setItem('oh_demo_team',t)}catch(e){};document.querySelectorAll('.team').forEach(x=>x.classList.toggle('sel',x.textContent===t));showInfo(t);};
   teamsEl.appendChild(b);
 });
 function showInfo(t){
@@ -103,11 +99,10 @@ document.getElementById('sendBtn').onclick=async()=>{
   if(busy) return;
   if(!team){ toast('先にチームを選んでください'); return; }
   if(!kind){ toast('応援の種類を選んでください'); return; }
-  toast('イベントは終了しました。体験はデモページへ！'); return;
   busy=true;
   try{
     const res = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/support',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({team,kind,device:dev,message:document.getElementById('msg').value.trim(),name:document.getElementById('name').value.trim()})});
+      body:JSON.stringify({event:'demo',team,kind,device:dev,message:document.getElementById('msg').value.trim(),name:document.getElementById('name').value.trim()})});
     if(!res.ok) throw new Error();
     document.getElementById('msg').value='';
     toast(team+' に送りました！');
@@ -130,7 +125,7 @@ function spawnFloat(row){
 let feedLast = 0, feedInit = true;
 async function pollFeed(){
   try{
-    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?event=sw-hiroshima&after='+feedLast);
+    const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?event=demo&after='+feedLast);
     const rows = await r.json();
     const box = document.getElementById('liveFeed');
     rows.forEach((row,i)=>{
