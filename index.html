@@ -51,7 +51,7 @@ a{color:var(--ink2)}
   <button class="act" data-k="user">🙋 利用者になりたい</button>
   <button class="act" data-k="intro">🤝 人を紹介できる</button>
   <button class="act" data-k="spread">📣 広めたい</button>
-  <button class="act coin" data-k="coin" id="coinBtn">🪙 おひねりを投げる</button>
+  <button class="act coin" data-k="coin" id="coinBtn">🔥 エールを投げる</button>
 </div>
 <div class="coincount" id="coinCount"></div>
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
@@ -95,7 +95,7 @@ function showInfo(t){
 }
 if(team) showInfo(team);
 function updCoins(){
-  document.getElementById('coinCount').textContent = '応援チケット 無制限（何回でも投げられます）';
+  document.getElementById('coinCount').textContent = 'エール 無制限（何回でも投げられます）';
   document.getElementById('coinBtn').disabled = false;
 }
 updCoins();
@@ -114,8 +114,8 @@ document.querySelectorAll('.act').forEach(b=>b.onclick=async()=>{
   }catch(e){ toast('送信に失敗しました。電波を確認してもう一度'); }
   busy=false;
 });
-const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🪙 おひねり'};
-const KINDS_IC = {cheer:'👏',user:'🙋',intro:'🤝',spread:'📣',coin:'🪙'};
+const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🔥 エール'};
+const KINDS_IC = {cheer:'👏',user:'🙋',intro:'🤝',spread:'📣',coin:'🔥'};
 function spawnFloat(row){
   const layer=document.getElementById('floatLayer');
   const f=document.createElement('div');
