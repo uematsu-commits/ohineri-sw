@@ -13,7 +13,7 @@ h1{font-size:22px;margin-bottom:2px}
 .sub{color:var(--ink2);font-size:12px;margin-bottom:16px;line-height:1.6}
 .sec{font-size:12px;font-weight:800;letter-spacing:.15em;color:var(--gold);margin:18px 0 8px}
 .teams{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.team{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 4px;font-size:13.5px;font-weight:800;color:var(--ink);text-align:center;cursor:pointer}
+.team{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:11px 3px;font-size:12px;line-height:1.35;font-weight:800;color:var(--ink);text-align:center;cursor:pointer}
 .team.sel{border-color:var(--gold);background:#221d12;color:var(--gold)}
 textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:14px;height:64px;resize:none}
 textarea:focus{outline:2px solid var(--gold)}
@@ -60,20 +60,20 @@ a{color:var(--ink2)}
 <div id="floatLayer"></div>
 <div id="toast">送りました！</div>
 <script>
-const TEAMS = ["不登校", "まりあ", "友達の輪", "1年生", "高校生", "たちまち", "海", "バビロン", "ビジスタ"];
+const TEAMS = ["山P", "うちのまりあは面倒くさがり", "くびMIKAN社中", "高校生", "じぶん時間", "たちまちエンディングノート", "友達の輪", "ピッチャー"];
 const TEAM_INFO = {
-  "不登校": "（チーム概要・準備中）",
-  "まりあ": "（チーム概要・準備中）",
-  "友達の輪": "（チーム概要・準備中）",
-  "1年生": "（チーム概要・準備中）",
-  "高校生": "（チーム概要・準備中）",
-  "たちまち": "（チーム概要・準備中）",
-  "海": "（チーム概要・準備中）",
-  "バビロン": "（チーム概要・準備中）",
-  "ビジスタ": "ビジコン会場に、マツダスタジアムの盛り上がりを。ビジコン管理・活性化ツール（このアプリを作ったチームです）"
+  "山P": "『きっかけラボ』— 失敗の練習が出来る教室",
+  "うちのまりあは面倒くさがり": "『Sassy』— 恋愛の悩みの解決を手助けするサイト",
+  "くびMIKAN社中": "『海の学校』— 瀬戸内の限界集落・久比で、子どもたちが“生きる力”と“暮らしの感覚”を取り戻す自然教育プログラム",
+  "高校生": "『大会実績を、\"すごい\"で終わらせない』— 優秀な高校生と企業との接点を作る",
+  "じぶん時間": "『DINO SOLO CLUB』— ひとりを、冒険に変える。",
+  "たちまちエンディングノート": "『なりたい自分に変身！テクマクマヤコン』— 老後の不安を言語化して次に何をすればいいか分かる",
+  "友達の輪": "『RETREAT MAKERS』— 仲間の輪を広げるためのリクルートイベント",
+  "ピッチャー": "『ビジスタ』— ビジコン会場に、マツダスタジアムの盛り上がりを。ビジコン管理・活性化ツール（このアプリを作ったチームです）"
 };
 let team = null;
 try{ team = localStorage.getItem('oh_team'); }catch(e){}
+if(team && !TEAMS.includes(team)) team = null;
 let coins = 3;
 let dev='';try{dev=localStorage.getItem('oh_dev')||'';if(!dev){dev=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('oh_dev',dev);}}catch(e){dev='anon'+Math.floor(Math.random()*1e9);}
 try{ const c = localStorage.getItem('oh_coins'); if(c!==null) coins = parseInt(c,10); }catch(e){}
