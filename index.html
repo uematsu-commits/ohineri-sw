@@ -27,6 +27,15 @@ input{width:100%;background:var(--card);border:1.5px solid var(--line);border-ra
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#161105;font-weight:900;font-size:14px;border-radius:99px;padding:11px 24px;transition:transform .25s;z-index:9;white-space:nowrap}
 #toast.on{transform:translateX(-50%) translateY(0)}
 a{color:var(--ink2)}
+#floatLayer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:8}
+.floatR{position:absolute;bottom:-70px;display:flex;flex-direction:column;align-items:center;gap:2px;animation:floatUp 3.6s ease-out forwards}
+.floatR .ic{font-size:34px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));animation:wobble 1.1s ease-in-out infinite alternate}
+.floatR.big .ic{font-size:46px}
+.floatR .bub{max-width:180px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:4px 9px;font-size:11px;line-height:1.45;color:var(--ink);text-align:center;word-break:break-all}
+.floatR.big .bub{border-color:var(--gold)}
+.floatR .tm{font-size:10px;font-weight:800;color:var(--gold)}
+@keyframes floatUp{0%{transform:translateY(0);opacity:0}8%{opacity:1}75%{opacity:1}100%{transform:translateY(-82vh);opacity:0}}
+@keyframes wobble{from{transform:translateX(-7px) rotate(-4deg)}to{transform:translateX(7px) rotate(4deg)}}
 </style></head><body>
 <h1 class="logo">ビジスタ<b>.</b></h1>
 <p class="sub">応援したいチームを選んで、応援を投げてください。応援は会場スクリーンに流れ、発表チームに届きます。匿名OK・本物のお金は使いません。</p>
@@ -48,9 +57,21 @@ a{color:var(--ink2)}
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
 <div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
 <p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a href="results.html">結果ページ</a></p>
+<div id="floatLayer"></div>
 <div id="toast">送りました！</div>
 <script>
-const TEAMS = ["不登校", "まりあ", "友達の輪", "1年生", "高校生", "たちまち", "海", "バビロン"];
+const TEAMS = ["不登校", "まりあ", "友達の輪", "1年生", "高校生", "たちまち", "海", "バビロン", "ビジスタ"];
+const TEAM_INFO = {
+  "不登校": "（チーム概要・準備中）",
+  "まりあ": "（チーム概要・準備中）",
+  "友達の輪": "（チーム概要・準備中）",
+  "1年生": "（チーム概要・準備中）",
+  "高校生": "（チーム概要・準備中）",
+  "たちまち": "（チーム概要・準備中）",
+  "海": "（チーム概要・準備中）",
+  "バビロン": "（チーム概要・準備中）",
+  "ビジスタ": "ビジコン会場に、マツダスタジアムの盛り上がりを。ビジコン管理・活性化ツール（このアプリを作ったチームです）"
+};
 let team = null;
 try{ team = localStorage.getItem('oh_team'); }catch(e){}
 let coins = 3;
@@ -96,14 +117,27 @@ document.querySelectorAll('.act').forEach(b=>b.onclick=async()=>{
   busy=false;
 });
 const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🪙 おひねり'};
-let feedLast = 0;
+const KINDS_IC = {cheer:'👏',user:'🙋',intro:'🤝',spread:'📣',coin:'🪙'};
+function spawnFloat(row){
+  const layer=document.getElementById('floatLayer');
+  const f=document.createElement('div');
+  f.className='floatR'+(row.kind==='coin'?' big':'');
+  f.style.left=(8+Math.random()*72)+'%';
+  const ic=document.createElement('div'); ic.className='ic'; ic.textContent=KINDS_IC[row.kind]||'👏'; f.appendChild(ic);
+  const tm=document.createElement('div'); tm.className='tm'; tm.textContent='→ '+row.team; f.appendChild(tm);
+  if(row.message){const b=document.createElement('div'); b.className='bub'; b.textContent=row.message; f.appendChild(b);}
+  layer.appendChild(f);
+  setTimeout(()=>f.remove(), 3800);
+}
+let feedLast = 0, feedInit = true;
 async function pollFeed(){
   try{
     const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/feed?after='+feedLast);
     const rows = await r.json();
     const box = document.getElementById('liveFeed');
-    for(const row of rows){
+    rows.forEach((row,i)=>{
       feedLast = Math.max(feedLast, row.id);
+      if(!feedInit) setTimeout(()=>spawnFloat(row), Math.min(i,10)*320);
       const d = document.createElement('div');
       d.style.cssText='background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.55'+(row.kind==='coin'?';border:1px solid var(--gold)':'');
       const who=document.createElement('b'); who.textContent=(row.name||'匿名');
@@ -113,7 +147,8 @@ async function pollFeed(){
       if(row.message){const m=document.createElement('div'); m.textContent='「'+row.message+'」'; d.appendChild(m);}
       box.prepend(d);
       while(box.children.length>8) box.removeChild(box.lastChild);
-    }
+    });
+    feedInit = false;
   }catch(e){}
   setTimeout(pollFeed, 3500);
 }
