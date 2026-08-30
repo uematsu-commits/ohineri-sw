@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>おひねり 結果</title><style>
+<title>ビジスタ 結果</title><style>
 :root{--bg:#0f1013;--card:#1c1d24;--card2:#24252e;--ink:#f2efe6;--ink2:#8f8d97;--gold:#e8b04b;--gold-deep:#c8871d;--red:#e0454f;--line:#2c2d35}
 *{box-sizing:border-box;margin:0;font-family:'Hiragino Sans','Noto Sans JP',sans-serif}
 body{background:var(--bg);color:var(--ink);min-height:100vh}
@@ -22,15 +22,26 @@ h1{font-size:22px;margin-bottom:4px}
 .m{font-size:13px;background:var(--card2);border-radius:9px;padding:8px 12px;line-height:1.5}
 .m b{color:var(--gold);font-weight:700;font-size:11.5px}
 </style></head><body>
-<h1 class="logo">おひねり<b>.</b> 結果</h1>
+<h1 class="logo">ビジスタ<b>.</b> 結果</h1>
 <p class="sub">Startup Weekend 広島 — 最終発表への会場応援の記録。10秒ごとに自動更新。</p>
+<div style="display:flex;gap:10px;margin-bottom:16px" id="tops"></div>
 <div id="out">読み込み中…</div>
 <script>
 const TEAMS = ["不登校", "まりあ", "友達の輪", "1年生", "高校生", "たちまち", "海", "バビロン"];
-const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🪙 おひねり"};
+const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🪙 ビジスタ"};
 async function load(){
   try{
     const r = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/all');
+    const sr = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/stats');
+    const stats = await sr.json();
+    const tops=document.getElementById('tops'); tops.innerHTML='';
+    [['応援 合計',stats.total+' 件'],['関係人口（応援した人数）',stats.uniq+' 人'],['ピーク熱量',stats.peak+' /100']].forEach(([k,v])=>{
+      const d=document.createElement('div');
+      d.style.cssText='flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:center';
+      const kv=document.createElement('div');kv.style.cssText='font-size:10.5px;color:var(--ink2)';kv.textContent=k;
+      const vv=document.createElement('div');vv.style.cssText='font-size:22px;font-weight:900;color:var(--gold);margin-top:3px';vv.textContent=v;
+      d.appendChild(kv);d.appendChild(vv);tops.appendChild(d);
+    });
     const rows = await r.json();
     const byTeam = {};
     TEAMS.forEach(t=>byTeam[t]={count:0,coins:0,kinds:{},msgs:[]});
@@ -49,7 +60,8 @@ async function load(){
       const head = document.createElement('div'); head.className='thead';
       const nm = document.createElement('span'); nm.className='tname'; nm.textContent=t;
       const st = document.createElement('span'); st.className='tstat';
-      st.innerHTML = '応援 <b>'+b.count+'</b> 件 ／ 🪙 <b>'+b.coins+'</b> 枚';
+      const tu=(stats.perTeam&&stats.perTeam[t])?stats.perTeam[t].uniq:0;
+      st.innerHTML = '応援 <b>'+b.count+'</b> 件 ／ 関係人口 <b>'+tu+'</b> 人 ／ 🪙 <b>'+b.coins+'</b> 枚';
       head.appendChild(nm); head.appendChild(st); card.appendChild(head);
       const ks = document.createElement('div'); ks.className='kinds';
       for(const k in b.kinds){ const s=document.createElement('span'); s.textContent=(KINDS[k]||k)+' × '+b.kinds[k]; ks.appendChild(s); }
