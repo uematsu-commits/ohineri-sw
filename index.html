@@ -95,8 +95,8 @@ function showInfo(t){
 }
 if(team) showInfo(team);
 function updCoins(){
-  document.getElementById('coinCount').textContent = '応援チケット 残り '+coins+' 枚';
-  document.getElementById('coinBtn').disabled = coins<=0;
+  document.getElementById('coinCount').textContent = '応援チケット 無制限（何回でも投げられます）';
+  document.getElementById('coinBtn').disabled = false;
 }
 updCoins();
 let busy=false;
@@ -104,13 +104,11 @@ document.querySelectorAll('.act').forEach(b=>b.onclick=async()=>{
   if(busy) return;
   if(!team){ toast('先にチームを選んでください'); return; }
   const kind=b.dataset.k;
-  if(kind==='coin'&&coins<=0) return;
   busy=true;
   try{
     const res = await fetch('https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri/api/support',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({team,kind,device:dev,message:document.getElementById('msg').value.trim(),name:document.getElementById('name').value.trim()})});
     if(!res.ok) throw new Error();
-    if(kind==='coin'){ coins--; try{localStorage.setItem('oh_coins',String(coins))}catch(e){}; updCoins(); }
     document.getElementById('msg').value='';
     toast(team+' に送りました！');
   }catch(e){ toast('送信に失敗しました。電波を確認してもう一度'); }
