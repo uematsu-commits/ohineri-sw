@@ -143,7 +143,9 @@ function renderSponsors(){
     bar.appendChild(document.createTextNode('協賛： '));
     SPONSORS.forEach((s,i)=>{
       if(i) bar.appendChild(document.createTextNode(' ／ '));
-      if(s.url){ const a=document.createElement('a'); a.href=s.url; a.target='_blank'; a.rel='noopener'; a.style.color='var(--gold)'; a.textContent=s.name; bar.appendChild(a); }
+      let safeUrl = '';
+      try{ const u = new URL(s.url); if(['http:','https:'].includes(u.protocol)) safeUrl = u.href; }catch(e){}
+      if(safeUrl){ const a=document.createElement('a'); a.href=safeUrl; a.target='_blank'; a.rel='noopener'; a.style.color='var(--gold)'; a.textContent=s.name; bar.appendChild(a); }
       else bar.appendChild(document.createTextNode(s.name));
     });
     bar.style.display = 'block';

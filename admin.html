@@ -125,12 +125,15 @@ async function copyUrl(id){
   catch(e){ prompt('コピーしてください', t); }
 }
 async function admin(path, body){
-  const r = await fetch(API+'/api/admin/'+path, {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:KEY,...body})});
+  const r = await fetch(API+'/api/admin/'+path, {method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+KEY},body:JSON.stringify(body||{})});
   return r.json();
+}
+function adminGet(path){
+  return fetch(API+'/api/admin/'+path, {headers:{'authorization':'Bearer '+KEY}});
 }
 async function doLogin(){
   KEY = document.getElementById('keyInput').value.trim() || KEY;
-  const r = await fetch(API+'/api/admin/list?key='+encodeURIComponent(KEY));
+  const r = await adminGet('list');
   if(!r.ok){ toast('キーが違います'); return; }
   EVENTS = await r.json();
   try{ localStorage.setItem('oh_admin_key', KEY); }catch(e){}
@@ -218,7 +221,7 @@ async function ouenStart(secs){
 }
 let contactsCache = [];
 async function loadContacts(){
-  const r = await fetch(API+'/api/admin/contacts?key='+encodeURIComponent(KEY)+'&event='+encodeURIComponent(sel.slug));
+  const r = await adminGet('contacts?event='+encodeURIComponent(sel.slug));
   contactsCache = await r.json();
   const box = document.getElementById('contactsList'); box.innerHTML='';
   document.getElementById('contactsCount').textContent = contactsCache.length+'件';
@@ -235,9 +238,10 @@ async function loadContacts(){
   }
   if(!contactsCache.length){ box.innerHTML='<div class="hint">まだオプトインはありません</div>'; }
 }
+function csvEsc(v){ let s=String(v??''); if(/^[=+\-@\t\r]/.test(s)) s="'"+s; return '"'+s.replace(/"/g,'""')+'"'; }
 function exportContacts(){
   if(!contactsCache.length){ toast('先に「読み込む」を押してください'); return; }
-  const escq = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const escq = csvEsc;
   const csv = '\ufeffteam,kind,name,contact,message,created_at\n' + contactsCache.map(x=>[x.team,x.kind,x.name,x.contact,x.message,x.created_at].map(escq).join(',')).join('\n');
   const aEl = document.createElement('a');
   aEl.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
@@ -257,7 +261,7 @@ async function createEvent(){
   else toast('作成に失敗: '+(r.error||''));
 }
 async function refreshList(selectSlug){
-  const r = await fetch(API+'/api/admin/list?key='+encodeURIComponent(KEY));
+  const r = await adminGet('list');
   EVENTS = await r.json(); renderEvList();
   if(selectSlug) selectEvent(selectSlug);
 }
@@ -269,7 +273,7 @@ async function resetEvent(){
 async function exportCsv(){
   const r = await fetch(API+'/api/all?event='+encodeURIComponent(sel.slug));
   const rows = await r.json();
-  const escq = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const escq = csvEsc;
   const csv = '﻿id,team,kind,message,name,created_at\n' + rows.map(x=>[x.id,x.team,x.kind,x.message,x.name,x.created_at].map(escq).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
