@@ -26,6 +26,8 @@ input{width:100%;background:var(--card);border:1.5px solid var(--line);border-ra
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#161105;font-weight:900;font-size:14px;border-radius:99px;padding:11px 24px;transition:transform .25s;z-index:9;white-space:nowrap}
 #toast.on{transform:translateX(-50%) translateY(0)}
 a{color:var(--ink2)}
+.act.spon{border-color:var(--gold-deep);font-size:12.5px}
+#ouenBadge{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;border:0;font-weight:900;text-align:center;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
 .panel{background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7}
 #floatLayer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:8}
 .floatR{position:absolute;bottom:-70px;display:flex;flex-direction:column;align-items:center;gap:2px;animation:floatUp 3.6s ease-out forwards}
@@ -40,11 +42,12 @@ a{color:var(--ink2)}
 <h1 class="logo">ビジスタ<b>.</b></h1>
 <p class="sub" id="evName">読み込み中…</p>
 <div id="closedBanner" class="panel" style="display:none;margin-bottom:14px">このイベントは終了しました。応援の受付は締め切っています。</div>
+<div id="ouenBadge" style="display:none">🔥 応援タイム！ あと <span id="ouenSec">--</span> 秒 — いま応援を送ろう</div>
 <div class="sec">1. チームを選ぶ</div>
 <div class="teams" id="teams"></div>
 <div id="teamInfo" class="panel" style="display:none;margin-top:10px"><b id="tiName" style="color:var(--gold)"></b><span id="tiDesc"></span></div>
 <div class="sec">2. 応援を選ぶ（タップで選択）</div>
-<div class="acts">
+<div class="acts" id="acts">
   <button class="act" data-k="user">🙋 利用者になりたい</button>
   <button class="act" data-k="intro">🤝 人を紹介できる</button>
   <button class="act" data-k="spread">📣 広めたい</button>
@@ -52,10 +55,17 @@ a{color:var(--ink2)}
 </div>
 <div class="sec">3. ひとことメッセージ（任意・一緒に届きます）</div>
 <textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
+<div id="coinInfo" style="display:none;font-size:11.5px;color:var(--ink2);text-align:center;margin-top:8px"></div>
+<div id="optinBox" style="display:none;margin-top:10px" class="panel">
+  <div style="font-size:11.5px;color:var(--gold);font-weight:800;margin-bottom:6px">チームからの連絡を受け取れます（任意）</div>
+  <input id="contact" maxlength="100" placeholder="連絡先（メール・SNSアカウントなど）">
+  <label style="display:flex;gap:8px;align-items:flex-start;margin-top:8px;font-size:11px;color:var(--ink2);line-height:1.6"><input type="checkbox" id="consent" style="width:auto;margin-top:2px">連絡先を本イベントの主催者に共有し、応援先チームからの連絡・イベント運営の目的で利用されることに同意します</label>
+</div>
 <div style="margin-top:8px"><input id="name" maxlength="20" placeholder="お名前（任意・空欄で匿名）"></div>
 <button class="send" id="sendBtn">🚀 送信（何回でもOK）</button>
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
 <div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
+<div id="sponsorBar" style="display:none;margin-top:22px;font-size:11px;color:var(--ink2);line-height:1.8"></div>
 <p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a id="resLink" href="#">結果ページ</a></p>
 <div id="floatLayer"></div>
 <div id="toast">送りました！</div>
@@ -65,6 +75,9 @@ const EV = new URLSearchParams(location.search).get('event') || 'demo';
 document.getElementById('resLink').href = 'app-results.html?event='+encodeURIComponent(EV);
 let TEAMS = [], TEAM_INFO = {}, closed = false;
 let team = null, kind = null, currentTeam = '';
+let SPONSORS = [], COIN_LIMIT = 3, ouenUntil = 0, stampSel = '', sponsorsJson = '';
+let coinUsed = {};
+try{ coinUsed = JSON.parse(localStorage.getItem('oh_coinused_'+EV)||'{}'); }catch(e){}
 let dev='';try{dev=localStorage.getItem('oh_dev')||'';if(!dev){dev=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('oh_dev',dev);}}catch(e){dev='anon'+Math.floor(Math.random()*1e9);}
 
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1600);}
@@ -83,7 +96,7 @@ function renderTeams(){
     b.className='team'+(t===team?' sel':'');
     b.textContent=t;
     if(t===currentTeam){const n=document.createElement('span');n.className='now';n.textContent='▶ 発表中';b.appendChild(n);}
-    b.onclick=()=>{team=t;try{localStorage.setItem('oh_team_'+EV,t)}catch(e){};renderTeams();showInfo(t);};
+    b.onclick=()=>{team=t;try{localStorage.setItem('oh_team_'+EV,t)}catch(e){};renderTeams();showInfo(t);updateCoinInfo();};
     el.appendChild(b);
   });
 }
@@ -95,6 +108,10 @@ async function loadConfig(first){
     TEAMS = cfg.teams.map(t=>t.name);
     TEAM_INFO = {}; cfg.teams.forEach(t=>TEAM_INFO[t.name]=t.info||'');
     closed = cfg.status!=='open';
+    COIN_LIMIT = cfg.coin_limit ?? 3;
+    ouenUntil = cfg.ouen_until ? Date.parse(cfg.ouen_until) : 0;
+    const sj = JSON.stringify(cfg.sponsors||[]);
+    if(sj !== sponsorsJson){ sponsorsJson = sj; SPONSORS = cfg.sponsors||[]; renderSponsors(); }
     document.getElementById('evName').textContent = cfg.name+'　応援したいチームを選んで、応援を投げてください。匿名OK・本物のお金は使いません。';
     document.title = cfg.name+' — ビジスタ';
     document.getElementById('closedBanner').style.display = closed?'block':'none';
@@ -107,11 +124,54 @@ async function loadConfig(first){
     if(!team && currentTeam) team = currentTeam;
     if(first || prevCur!==currentTeam) { renderTeams(); if(team) showInfo(team); }
   }catch(e){}
-  setTimeout(()=>loadConfig(false), 12000);
+  setTimeout(()=>loadConfig(false), 8000);
 }
-document.querySelectorAll('.act').forEach(b=>b.onclick=()=>{
-  kind=b.dataset.k;
-  document.querySelectorAll('.act').forEach(x=>x.classList.toggle('sel',x.dataset.k===kind));
+function renderSponsors(){
+  document.querySelectorAll('.act.spon').forEach(x=>x.remove());
+  const acts = document.getElementById('acts');
+  SPONSORS.forEach(s=>{
+    if(!s.name) return;
+    const b = document.createElement('button');
+    b.className = 'act spon';
+    b.dataset.k = 'sponsor'; b.dataset.stamp = s.name;
+    b.textContent = (s.stamp||'🏢')+' '+s.name+'スタンプ';
+    acts.appendChild(b);
+  });
+  const bar = document.getElementById('sponsorBar');
+  if(SPONSORS.length){
+    bar.innerHTML = '';
+    bar.appendChild(document.createTextNode('協賛： '));
+    SPONSORS.forEach((s,i)=>{
+      if(i) bar.appendChild(document.createTextNode(' ／ '));
+      if(s.url){ const a=document.createElement('a'); a.href=s.url; a.target='_blank'; a.rel='noopener'; a.style.color='var(--gold)'; a.textContent=s.name; bar.appendChild(a); }
+      else bar.appendChild(document.createTextNode(s.name));
+    });
+    bar.style.display = 'block';
+  } else bar.style.display = 'none';
+}
+function updateOptin(){
+  document.getElementById('optinBox').style.display = (kind==='user'||kind==='intro') ? 'block' : 'none';
+}
+function updateCoinInfo(){
+  const el = document.getElementById('coinInfo');
+  if(kind==='coin' && team){
+    const used = coinUsed[team]||0;
+    const left = Math.max(0, COIN_LIMIT - used);
+    el.textContent = left>0 ? ('🔥 '+team+' へのエール 残り '+left+' 回（各チーム'+COIN_LIMIT+'回まで）') : ('🔥 '+team+' へのエールは上限（'+COIN_LIMIT+'回）に達しています');
+    el.style.display = 'block';
+  } else el.style.display = 'none';
+}
+setInterval(()=>{
+  const el = document.getElementById('ouenBadge');
+  const left = Math.ceil((ouenUntil - Date.now())/1000);
+  if(left > 0){ document.getElementById('ouenSec').textContent = left; el.style.display = 'block'; }
+  else el.style.display = 'none';
+}, 500);
+document.getElementById('acts').addEventListener('click', e=>{
+  const b = e.target.closest('.act'); if(!b) return;
+  kind = b.dataset.k; stampSel = b.dataset.stamp || '';
+  document.querySelectorAll('.act').forEach(x=>x.classList.toggle('sel', x===b));
+  updateOptin(); updateCoinInfo();
 });
 let busy=false;
 document.getElementById('sendBtn').onclick=async()=>{
@@ -120,22 +180,35 @@ document.getElementById('sendBtn').onclick=async()=>{
   if(!kind){ toast('応援の種類を選んでください'); return; }
   busy=true;
   try{
-    const res = await fetch(API+'/api/support',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({event:EV,team,kind,device:dev,message:document.getElementById('msg').value.trim(),name:document.getElementById('name').value.trim()})});
-    if(!res.ok) throw new Error();
+    const payload = {event:EV,team,kind,device:dev,message:document.getElementById('msg').value.trim(),name:document.getElementById('name').value.trim()};
+    if(kind==='sponsor') payload.stamp = stampSel;
+    if(kind==='user'||kind==='intro'){
+      payload.contact = document.getElementById('contact').value.trim();
+      payload.consent = document.getElementById('consent').checked;
+    }
+    const res = await fetch(API+'/api/support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(res.status===429){ toast('このチームへのエールは上限に達しました'); busy=false; updateCoinInfo(); return; }
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      if(err.error==='consent required'){ toast('連絡先を残す場合は同意にチェックしてください'); busy=false; return; }
+      throw new Error();
+    }
+    if(kind==='coin'){ coinUsed[team]=(coinUsed[team]||0)+1; try{localStorage.setItem('oh_coinused_'+EV, JSON.stringify(coinUsed))}catch(e){}; updateCoinInfo(); }
     document.getElementById('msg').value='';
     toast(team+' に送りました！');
   }catch(e){ toast('送信に失敗しました。電波を確認してもう一度'); }
   busy=false;
 };
-const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🔥 エール'};
-const KINDS_IC = {cheer:'👏',user:'🙋',intro:'🤝',spread:'📣',coin:'🔥'};
+const KINDS_L = {cheer:'👏 応援してる！',user:'🙋 利用者になりたい',intro:'🤝 人を紹介できる',spread:'📣 広めたい',coin:'🔥 エール',sponsor:'🏢 企業スタンプ'};
+const KINDS_IC = {cheer:'👏',user:'🙋',intro:'🤝',spread:'📣',coin:'🔥',sponsor:'🏢'};
+function kindLabel(row){ return row.kind==='sponsor' ? ('🏢 '+(row.stamp||'企業')+'スタンプ') : (KINDS_L[row.kind]||row.kind); }
+function kindIcon(row){ if(row.kind==='sponsor'){ const s=SPONSORS.find(x=>x.name===row.stamp); return (s&&s.stamp)||'🏢'; } return KINDS_IC[row.kind]||'👏'; }
 function spawnFloat(row){
   const layer=document.getElementById('floatLayer');
   const f=document.createElement('div');
   f.className='floatR'+(row.kind==='coin'?' big':'');
   f.style.left=(8+Math.random()*72)+'%';
-  const ic=document.createElement('div'); ic.className='ic'; ic.textContent=KINDS_IC[row.kind]||'👏'; f.appendChild(ic);
+  const ic=document.createElement('div'); ic.className='ic'; ic.textContent=kindIcon(row); f.appendChild(ic);
   const tm=document.createElement('div'); tm.className='tm'; tm.textContent='→ '+row.team; f.appendChild(tm);
   if(row.message){const b=document.createElement('div'); b.className='bub'; b.textContent=row.message; f.appendChild(b);}
   layer.appendChild(f);
@@ -154,7 +227,7 @@ async function pollFeed(){
       d.style.cssText='background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.55'+(row.kind==='coin'?';border:1px solid var(--gold)':'');
       const who=document.createElement('b'); who.textContent=(row.name||'匿名');
       const to=document.createElement('span'); to.style.color='var(--gold)'; to.style.fontWeight='800'; to.textContent=' → '+row.team+' ';
-      const k=document.createElement('span'); k.style.color='var(--ink2)'; k.textContent=KINDS_L[row.kind]||row.kind;
+      const k=document.createElement('span'); k.style.color='var(--ink2)'; k.textContent=kindLabel(row);
       d.appendChild(who); d.appendChild(to); d.appendChild(k);
       if(row.created_at){
         const tt=document.createElement('span');

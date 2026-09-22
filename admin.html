@@ -60,6 +60,14 @@ a{color:var(--gold)}
     <div class="card">
       <div style="font-weight:800;font-size:13px;margin-bottom:8px">▶ いま発表中のチーム（観客ページに反映）</div>
       <div class="row" id="curTeamBtns"></div>
+      <div style="font-weight:800;font-size:13px;margin:16px 0 8px">🔥 応援タイム（スクリーンにカウントダウン表示）</div>
+      <div class="row">
+        <button class="btn" onclick="ouenStart(60)">🔥 60秒 開始</button>
+        <button class="btn2" onclick="ouenStart(30)">30秒</button>
+        <button class="btn2" onclick="ouenStart(120)">120秒</button>
+        <button class="btn2" onclick="ouenStart(0)">停止</button>
+        <span id="ouenState" style="font-size:12px;color:var(--ink2)"></span>
+      </div>
       <div class="tops" style="margin-top:14px" id="statTiles"></div>
       <div style="font-weight:800;font-size:13px;margin:16px 0 2px">💬 応援フィード（不適切な投稿は削除できます）</div>
       <div id="adminFeed"></div>
@@ -75,7 +83,23 @@ a{color:var(--gold)}
       <div style="font-weight:800;font-size:13px;margin-bottom:6px">チーム編集（1行1チーム：チーム名 | 概要）</div>
       <textarea id="teamsEdit"></textarea>
       <div class="row" style="margin-top:8px"><button class="btn" onclick="saveTeams()">チーム構成を保存</button></div>
+      <div style="font-weight:800;font-size:13px;margin:16px 0 6px">🏢 協賛企業（1行1社：社名 | スタンプ絵文字 | URL）</div>
+      <textarea id="sponsorsEdit" style="height:90px" placeholder="例）株式会社サンプル | 🚀 | https://example.com"></textarea>
+      <div class="row" style="margin-top:8px;align-items:center">
+        <button class="btn" onclick="saveSponsors()">協賛企業を保存</button>
+        <span style="font-size:12px;color:var(--ink2)">🔥 エール上限（1人×1チームあたり）</span>
+        <input id="coinLimit" type="number" min="0" max="99" style="width:80px">
+        <button class="btn2" onclick="saveCoinLimit()">上限を保存</button>
+      </div>
+      <div class="hint">協賛企業は観客ページのスタンプ・協賛欄、スクリーン・結果ページに表示されます。</div>
     </div>
+  </div>
+
+  <div class="sec">📇 つながりリスト（連絡先オプトイン）</div>
+  <div class="card">
+    <div class="hint" style="margin-bottom:8px">「利用者になりたい」「人を紹介できる」で連絡先の共有に同意した人の一覧。取り扱いは同意文言の範囲（チームからの連絡・イベント運営）に限ること。</div>
+    <div class="row"><button class="btn2" onclick="loadContacts()">読み込む</button><button class="btn2" onclick="exportContacts()">📥 CSVエクスポート</button><span id="contactsCount" style="font-size:12px;color:var(--ink2)"></span></div>
+    <div id="contactsList"></div>
   </div>
 
   <div class="sec">新しいイベントを作る</div>
@@ -150,6 +174,9 @@ function renderPanel(){
     ct.appendChild(b);
   });
   document.getElementById('teamsEdit').value = sel.teams.map(t=>t.name+' | '+(t.info||'')).join('\n');
+  document.getElementById('sponsorsEdit').value = (sel.sponsors||[]).map(s=>[s.name, s.stamp||'', s.url||''].join(' | ').replace(/( \| )+$/,'')).join('\n');
+  document.getElementById('coinLimit').value = sel.coin_limit ?? 3;
+  document.getElementById('ouenState').textContent = (sel.ouen_until && Date.parse(sel.ouen_until) > Date.now()) ? '実施中' : '';
 }
 async function setCurrent(name){
   const r = await admin('update_event',{slug:sel.slug,current_team:name});
@@ -170,6 +197,51 @@ async function saveTeams(){
   if(!teams.length){ toast('チームが空です'); return; }
   const r = await admin('update_event',{slug:sel.slug,teams});
   if(r.ok){ sel.teams=teams; renderPanel(); toast('チーム構成を保存しました'); }
+}
+async function saveSponsors(){
+  const sponsors = document.getElementById('sponsorsEdit').value.split('\n').map(l=>{
+    const parts = l.split('|').map(x=>x.trim());
+    return parts[0] ? {name:parts[0], stamp:parts[1]||'', url:parts[2]||''} : null;
+  }).filter(Boolean);
+  const r = await admin('update_event',{slug:sel.slug,sponsors});
+  if(r.ok){ sel.sponsors=sponsors; toast('協賛企業を保存しました（'+sponsors.length+'社）'); }
+}
+async function saveCoinLimit(){
+  const n = parseInt(document.getElementById('coinLimit').value,10);
+  if(isNaN(n)||n<0){ toast('0以上の数を入れてください'); return; }
+  const r = await admin('update_event',{slug:sel.slug,coin_limit:n});
+  if(r.ok){ sel.coin_limit=n; toast('エール上限を '+n+' 回に設定しました'); }
+}
+async function ouenStart(secs){
+  const r = await admin('ouen_start',{event:sel.slug,seconds:secs});
+  if(r.ok){ toast(secs>0 ? ('応援タイム '+secs+'秒 開始！') : '応援タイムを停止しました'); document.getElementById('ouenState').textContent = secs>0?'実施中':''; }
+}
+let contactsCache = [];
+async function loadContacts(){
+  const r = await fetch(API+'/api/admin/contacts?key='+encodeURIComponent(KEY)+'&event='+encodeURIComponent(sel.slug));
+  contactsCache = await r.json();
+  const box = document.getElementById('contactsList'); box.innerHTML='';
+  document.getElementById('contactsCount').textContent = contactsCache.length+'件';
+  const KL = {user:'🙋 利用者になりたい', intro:'🤝 人を紹介できる'};
+  for(const c of contactsCache){
+    const d = document.createElement('div'); d.className='feedItem';
+    const body = document.createElement('div');
+    const b = document.createElement('b'); b.textContent = (c.name||'匿名');
+    const sp = document.createElement('span'); sp.style.cssText='color:var(--gold);font-weight:800'; sp.textContent = ' → '+c.team+'　'+(KL[c.kind]||c.kind);
+    const ct = document.createElement('div'); ct.style.cssText='color:var(--ink)'; ct.textContent = '📧 '+c.contact;
+    body.appendChild(b); body.appendChild(sp); body.appendChild(ct);
+    if(c.message){ const m=document.createElement('div'); m.style.cssText='color:var(--ink2);font-size:11.5px'; m.textContent='「'+c.message+'」'; body.appendChild(m); }
+    d.appendChild(body); box.appendChild(d);
+  }
+  if(!contactsCache.length){ box.innerHTML='<div class="hint">まだオプトインはありません</div>'; }
+}
+function exportContacts(){
+  if(!contactsCache.length){ toast('先に「読み込む」を押してください'); return; }
+  const escq = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv = '\ufeffteam,kind,name,contact,message,created_at\n' + contactsCache.map(x=>[x.team,x.kind,x.name,x.contact,x.message,x.created_at].map(escq).join(',')).join('\n');
+  const aEl = document.createElement('a');
+  aEl.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  aEl.download = sel.slug+'_contacts.csv'; aEl.click();
 }
 async function createEvent(){
   const name = document.getElementById('newName').value.trim();

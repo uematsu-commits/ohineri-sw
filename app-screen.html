@@ -25,8 +25,13 @@ h1{font-size:26px}
 .track{height:20px;background:var(--card2);border-radius:6px;overflow:hidden}
 .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:0 5px 5px 0;transition:width .6s;min-width:2px}
 .val{font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
+#ouenBanner{display:none;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;font-weight:900;text-align:center;border-radius:14px;padding:14px;margin-bottom:14px;font-size:30px;letter-spacing:.04em}
+#ouenBanner small{display:block;font-size:15px;font-weight:800;margin-top:2px}
+#sponsorLine{font-size:12px;color:var(--ink2);margin-top:6px;display:none}
 </style></head><body>
 <header><h1 class="logo">ビジスタ<b>.</b></h1><span id="evName" style="color:var(--ink2);font-size:14px"></span><span class="total">熱量 <b id="heat">0</b><span style="font-size:11px">/100</span>　関係人口 <b id="uniq">0</b><span style="font-size:11px">人</span>　応援 <b id="total">0</b></span></header>
+<div id="sponsorLine"></div>
+<div id="ouenBanner">🔥 応援タイム！ あと <span id="ouenSec">--</span> 秒<small id="ouenTeam"></small></div>
 <div class="main">
   <div class="feed" id="feed"></div>
   <div class="bars" id="bars"></div>
@@ -34,8 +39,10 @@ h1{font-size:26px}
 <script>
 const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
 const EV = new URLSearchParams(location.search).get('event') || 'demo';
-const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール"};
+const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール", "sponsor": "🏢 企業スタンプ"};
+function kindLabel(row){ if(row.kind==='sponsor'){ const sp=SPONSORS.find(x=>x.name===row.stamp); return ((sp&&sp.stamp)||'🏢')+' '+(row.stamp||'企業')+'スタンプ'; } return KINDS[row.kind]||row.kind; }
 let TEAMS = [], CUR = '';
+let SPONSORS = [], ouenUntil = 0;
 let lastId = 0;
 const feed = document.getElementById('feed');
 async function loadConfig(){
@@ -43,10 +50,15 @@ async function loadConfig(){
     const r = await fetch(API+'/api/events?event='+encodeURIComponent(EV));
     const cfg = await r.json();
     TEAMS = cfg.teams.map(t=>t.name); CUR = cfg.current_team||'';
+    SPONSORS = cfg.sponsors||[];
+    ouenUntil = cfg.ouen_until ? Date.parse(cfg.ouen_until) : 0;
+    const sl = document.getElementById('sponsorLine');
+    if(SPONSORS.length){ sl.textContent = '協賛： ' + SPONSORS.map(x=>x.name).join(' ／ '); sl.style.display='block'; }
+    else sl.style.display='none';
     document.getElementById('evName').textContent = cfg.name+' — 会場のみんなの応援がリアルタイムに流れています';
     document.title = cfg.name+' スクリーン — ビジスタ';
   }catch(e){}
-  setTimeout(loadConfig, 12000);
+  setTimeout(loadConfig, 4000);
 }
 async function tick(){
   try{
@@ -58,7 +70,7 @@ async function tick(){
       d.className = 'item' + (row.kind==='coin'?' coin':'');
       const who = document.createElement('span'); who.className='who'; who.textContent = row.name || '匿名';
       const to = document.createElement('span'); to.className='to'; to.textContent = ' → ' + row.team + ' ';
-      const k = document.createElement('span'); k.className='k'; k.textContent = KINDS[row.kind]||row.kind;
+      const k = document.createElement('span'); k.className='k'; k.textContent = kindLabel(row);
       d.appendChild(who); d.appendChild(to); d.appendChild(k);
       if(row.message){ const m=document.createElement('div'); m.textContent='「'+row.message+'」'; d.appendChild(m); }
       feed.appendChild(d);
@@ -71,14 +83,14 @@ async function tick(){
     document.getElementById('uniq').textContent = agg.uniq;
     const bars = document.getElementById('bars');
     bars.innerHTML='';
-    const max = Math.max(1,...TEAMS.map(t=>agg.perTeam[t]?.count||0));
+    const max = Math.max(1,...TEAMS.map(t=>agg.perTeam[t]?.uniq||0));
     for(const t of TEAMS){
-      const c = agg.perTeam[t]?.count||0;
+      const c = agg.perTeam[t]?.uniq||0;
       const row = document.createElement('div'); row.className='brow';
       const nm=document.createElement('span');nm.className='nm'+(t===CUR?' now':'');nm.textContent=(t===CUR?'▶ ':'')+t;
       const tr=document.createElement('div');tr.className='track';
       const f=document.createElement('div');f.className='fill';f.style.width=(c/max*100)+'%';tr.appendChild(f);
-      const v=document.createElement('span');v.className='val';v.textContent=c;
+      const v=document.createElement('span');v.className='val';v.textContent=c+'人';
       row.appendChild(nm);row.appendChild(tr);row.appendChild(v);
       bars.appendChild(row);
     }
@@ -99,5 +111,14 @@ async function tick(){
   }catch(e){}
   setTimeout(tick, 2000);
 }
+setInterval(()=>{
+  const el = document.getElementById('ouenBanner');
+  const left = Math.ceil((ouenUntil - Date.now())/1000);
+  if(left > 0){
+    document.getElementById('ouenSec').textContent = left;
+    document.getElementById('ouenTeam').textContent = CUR ? ('→ '+CUR+' にみんなで応援を送ろう') : 'いま応援を送ろう';
+    el.style.display = 'block';
+  } else el.style.display = 'none';
+}, 300);
 loadConfig(); tick();
 </script></body></html>

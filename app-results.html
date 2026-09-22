@@ -24,17 +24,20 @@ h1{font-size:22px;margin-bottom:4px}
 <p class="sub" id="evName">読み込み中…</p>
 <div style="display:flex;gap:10px;margin-bottom:16px" id="tops"></div>
 <div id="out">読み込み中…</div>
+<div id="sponsorBar" style="display:none;margin-top:20px;font-size:11.5px;color:var(--ink2)"></div>
 <script>
 const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
 const EV = new URLSearchParams(location.search).get('event') || 'demo';
 const openTeams = new Set();
-const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール"};
+const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール", "sponsor": "🏢 企業スタンプ"};
 let TEAMS = [];
 async function load(){
   try{
     const cr = await fetch(API+'/api/events?event='+encodeURIComponent(EV));
     const cfg = await cr.json();
     TEAMS = cfg.teams.map(t=>t.name);
+    const sb = document.getElementById('sponsorBar');
+    if(cfg.sponsors && cfg.sponsors.length){ sb.textContent = '協賛： ' + cfg.sponsors.map(x=>x.name).join(' ／ '); sb.style.display='block'; } else sb.style.display='none';
     document.getElementById('evName').textContent = cfg.name+' — 会場応援の集計。10秒ごとに自動更新。';
     document.title = cfg.name+' 結果 — ビジスタ';
     const r = await fetch(API+'/api/all?event='+encodeURIComponent(EV));
@@ -59,15 +62,16 @@ async function load(){
       if(row.message) b.msgs.push(row);
     }
     const out = document.getElementById('out'); out.innerHTML='';
-    const order = [...TEAMS].sort((a,b)=>byTeam[b].count-byTeam[a].count);
+    const pu = t => (stats.perTeam&&stats.perTeam[t])?stats.perTeam[t]:{uniq:0,points:0};
+    const order = [...TEAMS].sort((a,b)=>(pu(b).uniq-pu(a).uniq)||((pu(b).points||0)-(pu(a).points||0)));
     for(const t of order){
       const b = byTeam[t];
       const card = document.createElement('div'); card.className='card';
       const head = document.createElement('div'); head.className='thead';
       const nm = document.createElement('span'); nm.className='tname'; nm.textContent=t;
       const st = document.createElement('span'); st.className='tstat';
-      const tu=(stats.perTeam&&stats.perTeam[t])?stats.perTeam[t].uniq:0;
-      st.innerHTML = '応援 <b>'+b.count+'</b> 件 ／ 関係人口 <b>'+tu+'</b> 人 ／ 🔥 エール <b>'+b.coins+'</b> 回';
+      const pt = pu(t);
+      st.innerHTML = '関係人口 <b>'+pt.uniq+'</b> 人 ／ 応援ポイント <b>'+(pt.points||0)+'</b> ／ 応援 <b>'+b.count+'</b> 件 ／ 🔥 エール <b>'+b.coins+'</b> 回';
       head.appendChild(nm); head.appendChild(st); card.appendChild(head);
       const ks = document.createElement('div'); ks.className='kinds';
       for(const k in b.kinds){ const s=document.createElement('span'); s.textContent=(KINDS[k]||k)+' × '+b.kinds[k]; ks.appendChild(s); }
