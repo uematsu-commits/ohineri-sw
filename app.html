@@ -38,10 +38,17 @@ a{color:var(--ink2)}
 .floatR .tm{font-size:10px;font-weight:800;color:var(--gold)}
 @keyframes floatUp{0%{transform:translateY(0);opacity:0}8%{opacity:1}75%{opacity:1}100%{transform:translateY(-82vh);opacity:0}}
 @keyframes wobble{from{transform:translateX(-7px) rotate(-4deg)}to{transform:translateX(7px) rotate(4deg)}}
+/* 広島テーマ（イベントslugが bizsta で始まるとき）：もみじ紅×スタジアム */
+body.theme-hiroshima{--gold:#ff8a7a;--gold-deep:#e0454f;--bg:#120e10;--card:#201a1c;--card2:#2a2225;--line:#352b2e}
+body.theme-hiroshima .team.sel,body.theme-hiroshima .act.sel{background:#2a1416}
+body.theme-hiroshima .panel{background:#2a1416;border-color:var(--gold)}
+body.theme-hiroshima .team .now{color:#ffd166}
+#preBanner{display:none;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;font-weight:900;text-align:center;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;line-height:1.5}
 </style></head><body>
 <h1 class="logo">ビジスタ<b>.</b></h1>
 <p class="sub" id="evName">読み込み中…</p>
 <div id="closedBanner" class="panel" style="display:none;margin-bottom:14px">このイベントは終了しました。応援の受付は締め切っています。</div>
+<div id="preBanner">🎉 開催前の事前応援 受付中！気になるチームへ先に応援を送ろう</div>
 <div id="ouenBadge" style="display:none">🔥 応援タイム！ あと <span id="ouenSec">--</span> 秒 — いま応援を送ろう</div>
 <div class="sec">1. チームを選ぶ</div>
 <div class="teams" id="teams"></div>
@@ -72,6 +79,8 @@ a{color:var(--ink2)}
 <script>
 const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
 const EV = new URLSearchParams(location.search).get('event') || 'demo';
+const HIRO = EV.startsWith('bizsta');
+if(HIRO) document.body.classList.add('theme-hiroshima');
 document.getElementById('resLink').href = 'app-results.html?event='+encodeURIComponent(EV);
 let TEAMS = [], TEAM_INFO = {}, closed = false;
 let team = null, kind = null, currentTeam = '';
@@ -107,12 +116,16 @@ async function loadConfig(first){
     const cfg = await r.json();
     TEAMS = cfg.teams.map(t=>t.name);
     TEAM_INFO = {}; cfg.teams.forEach(t=>TEAM_INFO[t.name]=t.info||'');
-    closed = cfg.status!=='open';
+    closed = cfg.status!=='open' && cfg.status!=='pre';
+    const preMode = cfg.status==='pre';
+    document.getElementById('preBanner').style.display = preMode?'block':'none';
     COIN_LIMIT = cfg.coin_limit ?? 3;
     ouenUntil = cfg.ouen_until ? Date.parse(cfg.ouen_until) : 0;
     const sj = JSON.stringify(cfg.sponsors||[]);
     if(sj !== sponsorsJson){ sponsorsJson = sj; SPONSORS = cfg.sponsors||[]; renderSponsors(); }
-    document.getElementById('evName').textContent = cfg.name+'　応援したいチームを選んで、応援を投げてください。匿名OK・本物のお金は使いません。';
+    document.getElementById('evName').textContent = cfg.name+(HIRO
+      ? '　スタンドから声援を投げ込もう！応援したいチームを選んでください。匿名OK・本物のお金は使いません。'
+      : '　応援したいチームを選んで、応援を投げてください。匿名OK・本物のお金は使いません。');
     document.title = cfg.name+' — ビジスタ';
     document.getElementById('closedBanner').style.display = closed?'block':'none';
     document.getElementById('sendBtn').disabled = closed;
@@ -197,7 +210,7 @@ document.getElementById('sendBtn').onclick=async()=>{
     }
     if(kind==='coin'){ coinUsed[team]=(coinUsed[team]||0)+1; try{localStorage.setItem('oh_coinused_'+EV, JSON.stringify(coinUsed))}catch(e){}; updateCoinInfo(); }
     document.getElementById('msg').value='';
-    toast(team+' に送りました！');
+    toast(HIRO ? (team+' に声援を届けました！') : (team+' に送りました！'));
   }catch(e){ toast('送信に失敗しました。電波を確認してもう一度'); }
   busy=false;
 };

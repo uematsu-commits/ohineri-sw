@@ -28,6 +28,10 @@ h1{font-size:26px}
 #ouenBanner{display:none;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;font-weight:900;text-align:center;border-radius:14px;padding:14px;margin-bottom:14px;font-size:30px;letter-spacing:.04em}
 #ouenBanner small{display:block;font-size:15px;font-weight:800;margin-top:2px}
 #sponsorLine{font-size:12px;color:var(--ink2);margin-top:6px;display:none}
+/* 広島テーマ */
+body.theme-hiroshima{--gold:#ff8a7a;--gold-deep:#e0454f;--bg:#120e10;--card:#201a1c;--card2:#2a2225;--line:#352b2e}
+body.theme-hiroshima .item.coin{background:#2a1416;border-color:var(--gold)}
+body.theme-hiroshima .nm.now{color:#ffd166}
 </style></head><body>
 <header><h1 class="logo">ビジスタ<b>.</b></h1><span id="evName" style="color:var(--ink2);font-size:14px"></span><span class="total">熱量 <b id="heat">0</b><span style="font-size:11px">/100</span>　関係人口 <b id="uniq">0</b><span style="font-size:11px">人</span>　応援 <b id="total">0</b></span></header>
 <div id="sponsorLine"></div>
@@ -39,6 +43,8 @@ h1{font-size:26px}
 <script>
 const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
 const EV = new URLSearchParams(location.search).get('event') || 'demo';
+const HIRO = EV.startsWith('bizsta');
+if(HIRO) document.body.classList.add('theme-hiroshima');
 const KINDS = {"cheer": "👏 応援してる！", "user": "🙋 利用者になりたい", "intro": "🤝 人を紹介できる", "spread": "📣 広めたい", "coin": "🔥 エール", "sponsor": "🏢 企業スタンプ"};
 function kindLabel(row){ if(row.kind==='sponsor'){ const sp=SPONSORS.find(x=>x.name===row.stamp); return ((sp&&sp.stamp)||'🏢')+' '+(row.stamp||'企業')+'スタンプ'; } return KINDS[row.kind]||row.kind; }
 let TEAMS = [], CUR = '';
@@ -55,7 +61,7 @@ async function loadConfig(){
     const sl = document.getElementById('sponsorLine');
     if(SPONSORS.length){ sl.textContent = '協賛： ' + SPONSORS.map(x=>x.name).join(' ／ '); sl.style.display='block'; }
     else sl.style.display='none';
-    document.getElementById('evName').textContent = cfg.name+' — 会場のみんなの応援がリアルタイムに流れています';
+    document.getElementById('evName').textContent = cfg.name+(HIRO ? ' — スタンドの声援がリアルタイムに流れています' : ' — 会場のみんなの応援がリアルタイムに流れています');
     document.title = cfg.name+' スクリーン — ビジスタ';
   }catch(e){}
   setTimeout(loadConfig, 4000);

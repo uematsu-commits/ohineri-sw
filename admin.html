@@ -146,7 +146,7 @@ function renderEvList(){
   EVENTS.forEach(ev=>{
     const b=document.createElement('button');
     b.className='btn2'+(sel&&sel.slug===ev.slug?' on':'');
-    b.textContent=(ev.status==='open'?'🟢 ':'🔒 ')+ev.name;
+    b.textContent=({open:'🟢 ',pre:'🎉 ',closed:'🔒 '}[ev.status]||'🔒 ')+ev.name;
     b.onclick=()=>selectEvent(ev.slug);
     el.appendChild(b);
   });
@@ -164,7 +164,11 @@ function renderPanel(){
   document.getElementById('urlResults').textContent = PAGES+'app-results.html?event='+sel.slug;
   const q = qrcode(0,'M'); q.addData(appUrl); q.make();
   document.getElementById('qr').innerHTML = q.createImgTag(4,4);
-  document.getElementById('statusBtn').textContent = sel.status==='open' ? '🟢 受付中（タップで締め切る）' : '🔒 終了（タップで再開する）';
+  document.getElementById('statusBtn').textContent = {
+    pre:'🎉 開催前・事前応援 受付中（タップで本番開始）',
+    open:'🟢 受付中（タップで締め切る）',
+    closed:'🔒 終了（タップで開催前に戻す）'
+  }[sel.status] || '🔒 終了（タップで開催前に戻す）';
   const ct = document.getElementById('curTeamBtns'); ct.innerHTML='';
   const noneBtn = document.createElement('button');
   noneBtn.className='btn2'+(!sel.current_team?' on':''); noneBtn.textContent='（なし）';
@@ -186,10 +190,11 @@ async function setCurrent(name){
   if(r.ok){ sel.current_team=name; renderPanel(); toast(name?('発表中: '+name):'発表中チームをクリアしました'); }
 }
 async function toggleStatus(){
-  const next = sel.status==='open'?'closed':'open';
+  // ライフサイクル順に循環：開催前(pre)→本番(open)→終了(closed)→開催前…
+  const next = {pre:'open',open:'closed',closed:'pre'}[sel.status] || 'open';
   if(next==='closed' && !confirm('応援の受付を締め切ります。よろしいですか？')) return;
   const r = await admin('update_event',{slug:sel.slug,status:next});
-  if(r.ok){ sel.status=next; renderPanel(); renderEvList(); toast(next==='open'?'受付を再開しました':'受付を締め切りました'); }
+  if(r.ok){ sel.status=next; renderPanel(); renderEvList(); toast({open:'本番の受付を開始しました',closed:'受付を締め切りました',pre:'開催前（事前応援受付）に戻しました'}[next]); }
 }
 async function saveTeams(){
   const teams = document.getElementById('teamsEdit').value.split('\n').map(l=>{
