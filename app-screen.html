@@ -17,6 +17,8 @@ h1{font-size:26px}
 .item .who{font-weight:900}
 .item .to{color:var(--gold);font-weight:900}
 .item .k{font-size:13px;color:var(--ink2)}
+.item .pb{font-size:12px;color:var(--ink2);margin-left:10px;white-space:nowrap}
+.item .pb img{height:17px;vertical-align:-4px;background:#fff;border-radius:3px;padding:2px 5px;margin-left:5px}
 .item.coin{background:#221d12;border:1px solid var(--gold)}
 .bars{display:flex;flex-direction:column;gap:9px;justify-content:center}
 .brow{display:grid;grid-template-columns:110px 1fr 46px;gap:10px;align-items:center;font-size:14px}
@@ -78,6 +80,11 @@ async function tick(){
       const to = document.createElement('span'); to.className='to'; to.textContent = ' → ' + row.team + ' ';
       const k = document.createElement('span'); k.className='k'; k.textContent = kindLabel(row);
       d.appendChild(who); d.appendChild(to); d.appendChild(k);
+      const sp = SPONSORS.find(x=>x.slot===row.kind);
+      if(sp){ const p=document.createElement('span'); p.className='pb'; p.appendChild(document.createTextNode('presented by'));
+        if(sp.logo){ const im=document.createElement('img'); im.src=sp.logo; im.alt=sp.name; p.appendChild(im); }
+        else p.appendChild(document.createTextNode(' '+sp.name));
+        d.appendChild(p); }
       if(row.message){ const m=document.createElement('div'); m.textContent='「'+row.message+'」'; d.appendChild(m); }
       feed.appendChild(d);
       while(feed.children.length>12) feed.removeChild(feed.firstChild);

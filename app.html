@@ -27,6 +27,10 @@ input{width:100%;background:var(--card);border:1.5px solid var(--line);border-ra
 #toast.on{transform:translateX(-50%) translateY(0)}
 a{color:var(--ink2)}
 .act.spon{border-color:var(--gold-deep);font-size:12.5px}
+.act .pb{display:block;font-size:8.5px;font-weight:700;color:var(--ink2);margin-top:4px;letter-spacing:.02em}
+.act .pb img{height:15px;vertical-align:middle;background:#fff;border-radius:3px;padding:2px 5px;margin-left:4px}
+.floatR .pbf{display:flex;align-items:center;gap:4px;font-size:9px;color:#ddd;background:rgba(0,0,0,.5);border-radius:6px;padding:2px 7px}
+.floatR .pbf img{height:12px;background:#fff;border-radius:2px;padding:1px 3px}
 #ouenBadge{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;border:0;font-weight:900;text-align:center;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
 .panel{background:#221d12;border:1.5px solid var(--gold);border-radius:12px;padding:11px 14px;font-size:12.5px;line-height:1.7}
 #floatLayer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:8}
@@ -143,11 +147,11 @@ function renderSponsors(){
   document.querySelectorAll('.act.spon').forEach(x=>x.remove());
   const acts = document.getElementById('acts');
   SPONSORS.forEach(s=>{
-    if(!s.name) return;
+    if(!s.name || !s.stamp) return; // スタンプボタンは絵文字を設定した企業のみ（presented by枠はslotで別管理）
     const b = document.createElement('button');
     b.className = 'act spon';
     b.dataset.k = 'sponsor'; b.dataset.stamp = s.name;
-    b.textContent = (s.stamp||'🏢')+' '+s.name+'スタンプ';
+    b.textContent = s.stamp+' '+s.name+'スタンプ';
     acts.appendChild(b);
   });
   const bar = document.getElementById('sponsorBar');
@@ -163,6 +167,18 @@ function renderSponsors(){
     });
     bar.style.display = 'block';
   } else bar.style.display = 'none';
+  // presented by：slot指定のある協賛企業を対応する応援ボタンに表示（1枠1社）
+  document.querySelectorAll('#acts .act:not(.spon) .pb').forEach(x=>x.remove());
+  SPONSORS.forEach(s=>{
+    if(!s.slot) return;
+    const b = document.querySelector('#acts .act[data-k="'+s.slot+'"]:not(.spon)');
+    if(!b || b.querySelector('.pb')) return;
+    const p = document.createElement('span'); p.className='pb';
+    p.appendChild(document.createTextNode('presented by'));
+    if(s.logo){ const im=document.createElement('img'); im.src=s.logo; im.alt=s.name; p.appendChild(im); }
+    else p.appendChild(document.createTextNode(' '+s.name));
+    b.appendChild(p);
+  });
 }
 function updateOptin(){
   document.getElementById('optinBox').style.display = (kind==='user'||kind==='intro') ? 'block' : 'none';
@@ -225,6 +241,11 @@ function spawnFloat(row){
   f.style.left=(8+Math.random()*72)+'%';
   const ic=document.createElement('div'); ic.className='ic'; ic.textContent=kindIcon(row); f.appendChild(ic);
   const tm=document.createElement('div'); tm.className='tm'; tm.textContent='→ '+row.team; f.appendChild(tm);
+  const sp=SPONSORS.find(x=>x.slot===row.kind);
+  if(sp){ const c=document.createElement('div'); c.className='pbf'; c.appendChild(document.createTextNode('presented by'));
+    if(sp.logo){ const im=document.createElement('img'); im.src=sp.logo; im.alt=sp.name; c.appendChild(im); }
+    else c.appendChild(document.createTextNode(' '+sp.name));
+    f.appendChild(c); }
   if(row.message){const b=document.createElement('div'); b.className='bub'; b.textContent=row.message; f.appendChild(b);}
   layer.appendChild(f);
   setTimeout(()=>f.remove(), 3800);
