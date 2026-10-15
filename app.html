@@ -48,6 +48,15 @@ body.theme-hiroshima .team.sel,body.theme-hiroshima .act.sel{background:#2a1416}
 body.theme-hiroshima .panel{background:#2a1416;border-color:var(--gold)}
 body.theme-hiroshima .team .now{color:#ffd166}
 #preBanner{display:none;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#161105;font-weight:900;text-align:center;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;line-height:1.5}
+/* 入力/表示分離モード（bizsta）：折りたたみ見出し */
+.fold{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;font-size:12.5px;font-weight:800;color:var(--ink2);cursor:pointer;display:none}
+.fold .arw{color:var(--gold);margin-right:6px}
+body.split-mode .fold{display:block}
+body.split-mode #msgWrap.closed #msgBody{display:none}
+body.split-mode #feedWrap.closed #liveFeed{display:none}
+#msgWrap.hot .fold{border-color:var(--gold);background:#221d12;color:var(--gold)}
+body.theme-hiroshima #msgWrap.hot .fold{background:#2a1416}
+#msgWrap.hot textarea{border-color:var(--gold)}
 </style></head><body>
 <h1 class="logo">ビジスタ<b>.</b></h1>
 <p class="sub" id="evName">読み込み中…</p>
@@ -65,7 +74,12 @@ body.theme-hiroshima .team .now{color:#ffd166}
   <button class="act coin" data-k="coin">🔥 エールを投げる</button>
 </div>
 <div class="sec">3. ひとことメッセージ（任意・一緒に届きます）</div>
-<textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
+<div id="msgWrap">
+  <button class="fold" id="msgTgl" type="button"><span class="arw">▸</span><span id="msgTglTxt">コメントを書く（おすすめは発表後の応援タイム！）</span></button>
+  <div id="msgBody">
+    <textarea id="msg" maxlength="120" placeholder="例）その課題、うちの会社でも困ってます！"></textarea>
+  </div>
+</div>
 <div id="coinInfo" style="display:none;font-size:11.5px;color:var(--ink2);text-align:center;margin-top:8px"></div>
 <div id="optinBox" style="display:none;margin-top:10px" class="panel">
   <div style="font-size:11.5px;color:var(--gold);font-weight:800;margin-bottom:6px">チームからの連絡を受け取れます（任意）</div>
@@ -75,7 +89,10 @@ body.theme-hiroshima .team .now{color:#ffd166}
 <div style="margin-top:8px"><input id="name" maxlength="20" placeholder="お名前（任意・空欄で匿名）"></div>
 <button class="send" id="sendBtn">🚀 送信（何回でもOK）</button>
 <div class="sec" style="margin-top:24px">みんなの応援（リアルタイム）</div>
-<div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
+<div id="feedWrap">
+  <button class="fold" id="feedTgl" type="button" style="margin-bottom:8px"><span class="arw">▸</span><span id="feedTglTxt">みんなの応援は会場スクリーンで！（タップで一覧を見る）</span></button>
+  <div id="liveFeed" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
 <div id="sponsorBar" style="display:none;margin-top:22px;font-size:11px;color:var(--ink2);line-height:1.8"></div>
 <p style="margin-top:26px;font-size:11px;color:var(--ink2)">結果はイベント後に各チームへ共有されます ／ <a id="resLink" href="#">結果ページ</a></p>
 <div id="floatLayer"></div>
@@ -85,7 +102,31 @@ const API = 'https://qfptslfrasgidlaokhpx.supabase.co/functions/v1/ohineri';
 const EV = new URLSearchParams(location.search).get('event') || 'demo';
 const HIRO = EV.startsWith('bizsta');
 if(HIRO) document.body.classList.add('theme-hiroshima');
+// 入力/表示の分離モード（10/8定例）：スマホは入力に集中し、応援の流れは会場スクリーンへ寄せる
+const SPLIT = HIRO;
+if(SPLIT) document.body.classList.add('split-mode');
 document.getElementById('resLink').href = 'app-results.html?event='+encodeURIComponent(EV);
+// コメント欄・フィードの折りたたみ（split-mode時のみ有効）
+let msgManual = false, msgOpen = !SPLIT, feedOpen = !SPLIT;
+function setFold(wrapId, tglId, open){
+  const w=document.getElementById(wrapId);
+  w.classList.toggle('closed', !open);
+  const b=document.getElementById(tglId);
+  if(b) b.querySelector('.arw').textContent = open ? '▾' : '▸';
+}
+function applyMsgFold(){
+  if(!SPLIT) return;
+  const hot = ouenUntil > Date.now();
+  const open = hot || msgManual;
+  document.getElementById('msgWrap').classList.toggle('hot', hot);
+  document.getElementById('msgTglTxt').textContent = hot
+    ? '🔥 応援タイム中！いまコメントを送ろう'
+    : (document.getElementById('msg').value.trim() ? 'コメント入力中（タップで開閉）' : 'コメントを書く（おすすめは発表後の応援タイム！）');
+  setFold('msgWrap','msgTgl', open);
+}
+document.getElementById('msgTgl').onclick = ()=>{ msgManual = !msgManual; applyMsgFold(); };
+document.getElementById('feedTgl').onclick = ()=>{ feedOpen = !feedOpen; setFold('feedWrap','feedTgl', feedOpen); };
+if(SPLIT){ setFold('msgWrap','msgTgl', false); setFold('feedWrap','feedTgl', false); setInterval(applyMsgFold, 500); }
 let TEAMS = [], TEAM_INFO = {}, closed = false;
 let team = null, kind = null, currentTeam = '';
 let SPONSORS = [], COIN_LIMIT = 3, ouenUntil = 0, stampSel = '', sponsorsJson = '';
@@ -258,7 +299,7 @@ async function pollFeed(){
     const box = document.getElementById('liveFeed');
     rows.forEach((row,i)=>{
       feedLast = Math.max(feedLast, row.id);
-      if(!feedInit) setTimeout(()=>spawnFloat(row), Math.min(i,10)*320);
+      if(!feedInit && !SPLIT) setTimeout(()=>spawnFloat(row), Math.min(i,10)*320);
       const d = document.createElement('div');
       d.style.cssText='background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.55'+(row.kind==='coin'?';border:1px solid var(--gold)':'');
       const who=document.createElement('b'); who.textContent=(row.name||'匿名');
@@ -275,6 +316,9 @@ async function pollFeed(){
       box.prepend(d);
       while(box.children.length>8) box.removeChild(box.lastChild);
     });
+    if(SPLIT && !feedOpen && box.children.length){
+      document.getElementById('feedTglTxt').textContent = 'みんなの応援は会場スクリーンで！（タップで直近'+box.children.length+'件を見る）';
+    }
     feedInit = false;
   }catch(e){}
   setTimeout(pollFeed, 3500);
