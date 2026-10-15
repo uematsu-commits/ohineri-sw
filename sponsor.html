@@ -76,41 +76,41 @@ section{padding:88px 0}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .step{background:var(--concourse);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
 .step .t{font-family:var(--f-led);font-size:13px;color:var(--red);letter-spacing:.14em}
-.step h3{font-family:var(--f-display);font-size:16.5px;margin:8px 0 6px}
-.step p{font-size:13px;color:var(--ink-2)}
+.step h3{font-weight:900;font-size:16.5px;margin:8px 0 6px}
+.step p{font-size:13.5px;color:var(--ink-2)}
 
 /* program list */
 .plist{border-top:1.5px solid var(--ink);max-width:720px}
 .plist li{list-style:none;display:grid;grid-template-columns:54px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .plist .no{font-family:var(--f-led);font-size:17px;color:var(--red)}
-.plist b{font-family:var(--f-display);font-weight:400;font-size:15.5px}
-.plist span{color:var(--ink-2);font-size:13px;margin-left:10px}
+.plist b{font-weight:900;font-size:15.5px}
+.plist span{color:var(--ink-2);font-size:13.5px;margin-left:10px}
 .pnote{font-size:12.5px;color:var(--ink-2);margin-top:16px}
 
 /* merits */
 .merits{border-top:1.5px solid var(--ink)}
 .merit{display:grid;grid-template-columns:110px 1fr;gap:26px;padding:30px 0;border-bottom:1px solid var(--line)}
 .merit .no{font-family:var(--f-led);font-size:14px;letter-spacing:.24em;color:var(--red)}
-.merit h3{font-family:var(--f-display);font-size:17px;margin-bottom:8px}
-.merit p{font-size:13.5px;color:var(--ink-2);max-width:620px}
+.merit h3{font-weight:900;font-size:17px;letter-spacing:.03em;margin-bottom:8px}
+.merit p{font-size:14px;color:var(--ink-2);max-width:620px}
 
 /* prize */
 .prize-tbl{width:100%;max-width:640px;border-collapse:collapse;font-size:14px;margin-top:8px}
 .prize-tbl th,.prize-tbl td{border:1px solid var(--line);padding:13px 10px;text-align:center}
 .prize-tbl thead th{background:var(--concourse);font-weight:900}
 .prize-tbl .led{color:var(--red);font-size:17px}
-.prize-note{font-size:13px;color:var(--ink-2);margin-top:16px;max-width:640px}
+.prize-note{font-size:13.5px;color:var(--ink-2);margin-top:16px;max-width:640px}
 
 /* plans */
 .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
 .plan{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:26px 20px;position:relative;display:flex;flex-direction:column}
 .plan.reco{border-color:var(--red);box-shadow:0 14px 36px rgba(214,0,15,.14)}
 .plan .reco-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:11px;font-weight:900;border-radius:999px;padding:2px 14px;letter-spacing:.14em;white-space:nowrap}
-.plan h3{font-family:var(--f-display);font-size:17px}
+.plan h3{font-weight:900;font-size:17.5px}
 .plan .kuchi{font-family:var(--f-led);font-size:13px;color:var(--ink-2);margin-top:2px}
 .plan .price{font-family:var(--f-led);font-size:26px;color:var(--red);margin:10px 0 14px}
 .plan .price small{font-size:.5em;color:var(--ink-2)}
-.plan ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:var(--ink-2)}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--ink-2)}
 .plan li::before{content:"✓ ";color:var(--turf);font-weight:900}
 .plan li.plus{color:var(--ink);font-weight:700}
 .plan li.plus::before{content:"＋ ";color:var(--red)}
@@ -118,15 +118,15 @@ section{padding:88px 0}
 /* after */
 .after{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .after .card{background:var(--concourse);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
-.after h3{font-family:var(--f-display);font-size:15.5px;margin-bottom:8px}
-.after p{font-size:13px;color:var(--ink-2)}
+.after h3{font-weight:900;font-size:16px;margin-bottom:8px}
+.after p{font-size:13.5px;color:var(--ink-2)}
 
 /* flow */
 .flow{counter-reset:fl;max-width:680px}
 .flow li{list-style:none;counter-increment:fl;display:grid;grid-template-columns:46px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .flow li::before{content:counter(fl,decimal-leading-zero);font-family:var(--f-led);font-size:18px;color:var(--red)}
 .flow b{font-weight:900}
-.flow p{font-size:13px;color:var(--ink-2)}
+.flow p{font-size:13.5px;color:var(--ink-2)}
 
 /* closing */
 .closing{background:var(--red);color:#fff;text-align:center;padding:84px 0}
