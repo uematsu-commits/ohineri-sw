@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>協賛のご案内 — ビジネススタジアム広島 Vol.1</title>
+<meta name="description" content="ビジネススタジアム広島 Vol.1 協賛のご案内。一口1万円から。学生のピッチを熱気で包むスタジアムを、一緒につくってください。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ffffff; --concourse:#f7f2f2; --board:#141012;
+  --ink:#1c1416; --ink-2:#5e5154; --line:#e7dcdd;
+  --red:#d6000f; --red-deep:#a3000c; --red-tint:#fdeced;
+  --led:#ffc928; --turf:#2d7a46;
+  --gold:#d4a017; --gold-deep:#a77a00;
+  --tbd-bg:#fff4cc; --tbd-ink:#8a5a00;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-led:"DotGothic16","Osaka-mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.9;overflow-x:hidden}
+a{color:var(--red);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+.disp{font-family:var(--f-display);font-weight:400}
+.led{font-family:var(--f-led)}
+.tbd{font-size:10.5px;color:var(--tbd-ink);background:var(--tbd-bg);border-radius:4px;padding:2px 8px;font-weight:700;letter-spacing:.08em;vertical-align:2px;white-space:nowrap}
+section{padding:88px 0}
+.shead{margin-bottom:42px}
+.shead .en{font-family:var(--f-led);font-size:13px;letter-spacing:.4em;color:var(--red);display:block;margin-bottom:10px}
+.shead h2{font-family:var(--f-display);font-size:clamp(23px,4.2vw,36px);line-height:1.55;letter-spacing:.03em}
+.shead .lede{color:var(--ink-2);font-size:14.5px;margin-top:12px;max-width:640px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:14.5px;padding:16px 28px;text-decoration:none;letter-spacing:.06em;border-radius:999px;transition:transform .14s,box-shadow .14s}
+.btn:active{transform:scale(.97)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 8px 22px rgba(214,0,15,.3)}
+.btn-red:hover{background:var(--red-deep);transform:translateY(-2px)}
+.btn-line{color:var(--ink);border:1.5px solid var(--ink)}
+.btn-line:hover{border-color:var(--red);color:var(--red)}
+.btn-wh{background:#fff;color:var(--red)}
+.btn-wh:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.25)}
+
+/* top bar（イベントLPと同一サイトのナビ） */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.topbar .disp{font-size:17px}
+.topbar .disp i{font-style:normal;color:var(--red)}
+.topbar a.back{font-weight:700;text-decoration:none;color:var(--ink-2)}
+.topbar a.back:hover{color:var(--red)}
+
+/* hero */
+.hero{background:
+  radial-gradient(800px 400px at 90% -10%, var(--red-tint), transparent 60%),
+  var(--paper);padding:72px 0 64px;position:relative;overflow:hidden}
+.hero .tag{display:inline-block;font-family:var(--f-led);font-size:13px;letter-spacing:.3em;color:#fff;background:var(--red);border-radius:6px;padding:5px 16px;margin-bottom:22px}
+.hero h1{font-family:var(--f-display);font-size:clamp(30px,5.6vw,54px);line-height:1.5;letter-spacing:.02em}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero .lead{margin-top:24px;font-size:15px;color:var(--ink-2);max-width:620px}
+.hero .org{margin-top:14px;font-size:12.5px;color:var(--ink-2)}
+.hero .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+
+/* board（LED） */
+.board{background:var(--board);border-radius:18px;box-shadow:inset 0 0 0 6px #201a1c, 0 24px 60px rgba(20,16,18,.25);padding:46px 28px 40px;position:relative;overflow:hidden}
+.board::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.025) 3px 4px);pointer-events:none}
+.board .cap{text-align:center;font-family:var(--f-led);font-size:11px;letter-spacing:.4em;color:#b9adaf;margin-bottom:30px}
+.board .cap b{color:var(--led)}
+.board-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:740px;margin:0 auto;text-align:center}
+.board .num{font-family:var(--f-led);font-size:clamp(36px,6.6vw,62px);color:var(--led);text-shadow:0 0 22px rgba(255,201,40,.55);line-height:1.05}
+.board .num .u{font-size:.36em;color:#bdb1b3}
+.board .lbl{font-size:12px;font-weight:700;color:#bdb1b3;margin-top:8px;letter-spacing:.14em}
+.board .src{text-align:center;font-size:12px;color:#b9adaf;margin-top:28px}
+.board .src a{color:var(--led)}
+
+/* schedule */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{background:var(--concourse);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
+.step .t{font-family:var(--f-led);font-size:13px;color:var(--red);letter-spacing:.14em}
+.step h3{font-family:var(--f-display);font-size:16.5px;margin:8px 0 6px}
+.step p{font-size:13px;color:var(--ink-2)}
+
+/* program list */
+.plist{border-top:1.5px solid var(--ink);max-width:720px}
+.plist li{list-style:none;display:grid;grid-template-columns:54px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.plist .no{font-family:var(--f-led);font-size:17px;color:var(--red)}
+.plist b{font-family:var(--f-display);font-weight:400;font-size:15.5px}
+.plist span{color:var(--ink-2);font-size:13px;margin-left:10px}
+.pnote{font-size:12.5px;color:var(--ink-2);margin-top:16px}
+
+/* merits */
+.merits{border-top:1.5px solid var(--ink)}
+.merit{display:grid;grid-template-columns:110px 1fr;gap:26px;padding:30px 0;border-bottom:1px solid var(--line)}
+.merit .no{font-family:var(--f-led);font-size:14px;letter-spacing:.24em;color:var(--red)}
+.merit h3{font-family:var(--f-display);font-size:17px;margin-bottom:8px}
+.merit p{font-size:13.5px;color:var(--ink-2);max-width:620px}
+
+/* prize */
+.prize-tbl{width:100%;max-width:640px;border-collapse:collapse;font-size:14px;margin-top:8px}
+.prize-tbl th,.prize-tbl td{border:1px solid var(--line);padding:13px 10px;text-align:center}
+.prize-tbl thead th{background:var(--concourse);font-weight:900}
+.prize-tbl .led{color:var(--red);font-size:17px}
+.prize-note{font-size:13px;color:var(--ink-2);margin-top:16px;max-width:640px}
+
+/* plans */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+.plan{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:26px 20px;position:relative;display:flex;flex-direction:column}
+.plan.reco{border-color:var(--red);box-shadow:0 14px 36px rgba(214,0,15,.14)}
+.plan .reco-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:11px;font-weight:900;border-radius:999px;padding:2px 14px;letter-spacing:.14em;white-space:nowrap}
+.plan h3{font-family:var(--f-display);font-size:17px}
+.plan .kuchi{font-family:var(--f-led);font-size:13px;color:var(--ink-2);margin-top:2px}
+.plan .price{font-family:var(--f-led);font-size:26px;color:var(--red);margin:10px 0 14px}
+.plan .price small{font-size:.5em;color:var(--ink-2)}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:var(--ink-2)}
+.plan li::before{content:"✓ ";color:var(--turf);font-weight:900}
+.plan li.plus{color:var(--ink);font-weight:700}
+.plan li.plus::before{content:"＋ ";color:var(--red)}
+
+/* after */
+.after{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.after .card{background:var(--concourse);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
+.after h3{font-family:var(--f-display);font-size:15.5px;margin-bottom:8px}
+.after p{font-size:13px;color:var(--ink-2)}
+
+/* flow */
+.flow{counter-reset:fl;max-width:680px}
+.flow li{list-style:none;counter-increment:fl;display:grid;grid-template-columns:46px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.flow li::before{content:counter(fl,decimal-leading-zero);font-family:var(--f-led);font-size:18px;color:var(--red)}
+.flow b{font-weight:900}
+.flow p{font-size:13px;color:var(--ink-2)}
+
+/* closing */
+.closing{background:var(--red);color:#fff;text-align:center;padding:84px 0}
+.closing h2{font-family:var(--f-display);font-size:clamp(24px,4.6vw,38px);line-height:1.6}
+.closing p{margin-top:16px;font-size:14.5px;color:#ffd9dc}
+.closing .cta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:32px}
+.closing .contact{margin-top:26px;font-size:13px;color:#ffe1e3}
+.closing .contact a{color:#fff}
+
+footer{padding:40px 0;text-align:center;font-size:11.5px;color:var(--ink-2);background:var(--concourse);border-top:1px solid var(--line)}
+footer a{color:var(--ink-2)}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1)}
+.rv.on{opacity:1;transform:none}
+
+@media(max-width:860px){
+  section{padding:60px 0}
+  .steps,.after{grid-template-columns:1fr}
+  .plans{grid-template-columns:repeat(2,1fr)}
+  .merit{grid-template-columns:1fr;gap:6px}
+  .board-grid{grid-template-columns:1fr;gap:26px}
+}
+@media(max-width:520px){ .plans{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="wrap topbar">
+  <span class="disp">BIZSTA<i>.</i></span>
+  <a class="back" href="lp.html">← イベント公式ページへ</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">SPONSORSHIP GUIDE ── 協賛のご案内</span>
+    <h1>ビジコンを、<br><em>応援が見える</em>スタジアムに。</h1>
+    <p class="lead">観客はスマホから学生のピッチを応援し、その声がリアルタイムで会場のスクリーンに流れます。広島の学生の挑戦を、熱気と次の一歩につなぐために、貴社のご協賛をお願いします。</p>
+    <p class="org">ビジネススタジアム広島 Vol.1 ── 2027年1月15日（金）・ヒロマラボ（広島市）<br>主催：広島大学起業部 ／ 運営協力：チームピッチャー</p>
+    <div class="cta-row">
+      <a class="btn btn-red" href="#plans">協賛プランを見る</a>
+      <a class="btn btn-line" href="#apply">お申込みの流れ</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ RECORD ============ -->
+<section style="padding-top:64px">
+  <div class="wrap">
+    <div class="board rv">
+      <p class="cap">TRACK RECORD ── <b>STARTUP WEEKEND 広島 2026</b> 実運用実績</p>
+      <div class="board-grid">
+        <div><div class="num">767<span class="u"> 件</span></div><div class="lbl">送られた応援</div></div>
+        <div><div class="num">43<span class="u"> 人</span></div><div class="lbl">応援した人数</div></div>
+        <div><div class="num">9<span class="u"> チーム</span></div><div class="lbl">声援が届いた登壇チーム</div></div>
+      </div>
+      <p class="src">応援ツール「ビジスタ」による実績&emsp;<a href="https://uematsu-commits.github.io/ohineri-sw/report.html" target="_blank" rel="noopener">成果レポートを見る</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">WHY BIZSTA</span>
+      <h2>観客を、傍観者から当事者に。</h2>
+      <p class="lede">地方のビジネスコンテストに共通する「発表して終わり」「観客が傍観者」という課題に、会場全体が応援で参加する新しいビジコン体験で応えます。広島の学生が気軽に挑戦を発表できる場を、地域の企業の皆さまと一緒につくります。</p>
+    </div>
+    <div class="steps rv">
+      <div class="step"><span class="t">2026.09</span><h3>合宿</h3><p>アイデア出しと小発表で、挑戦の入口をつくる。</p></div>
+      <div class="step"><span class="t">2026.10-12</span><h3>壁打ち・ブラッシュアップ</h3><p>完成した事業計画でなくていい。磨きながら形にする。</p></div>
+      <div class="step"><span class="t">2027.01.15</span><h3>最終発表会</h3><p>実際に動く試作（MVP）レベルの発表を目指す。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROGRAM ============ -->
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">ON THE DAY</span>
+      <h2>当日の流れと審査員</h2>
+    </div>
+    <ul class="plist rv">
+      <li><span class="no">01</span><div><b>開場・オープニング</b><span>来場者はQRコードで「ビジスタ」に参加</span></div></li>
+      <li><span class="no">02</span><div><b>学生チームのピッチ</b><span>各発表のあとに「応援タイム」</span></div></li>
+      <li><span class="no">03</span><div><b>審査・集計</b><span>会場の応援データも参考指標に</span></div></li>
+      <li><span class="no">04</span><div><b>表彰・講評</b><span>協賛企業の特別賞もここで授与</span></div></li>
+      <li><span class="no">05</span><div><b>交流会</b><span>登壇者・観客・審査員・協賛企業。応援コメントを起点に引き合わせ</span></div></li>
+    </ul>
+    <p class="pnote">12:00開始予定。詳細なタイムテーブルは12月に確定します。<br>審査員は第一線で活躍する起業家・投資家3名が確定しています（正式発表前）。当日は広島ベンチャーキャピタルの皆さまも参加予定です。</p>
+  </div>
+</section>
+
+<!-- ============ MERITS ============ -->
+<section style="background:var(--red-tint)">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">MERITS</span>
+      <h2>協賛で得られること</h2>
+    </div>
+    <div class="merits rv">
+      <div class="merit"><span class="no">MERIT 01</span><div><h3>挑戦する学生と直接つながる</h3><p>イベント後に企業と学生が話す場を設けます。広島大学をはじめ、広島内外の大学から集まる学生と関係をつくれます。</p></div></div>
+      <div class="merit"><span class="no">MERIT 02</span><div><h3>応援の画面そのものに登場する</h3><p>会場のスポンサーボードと司会の読み上げに加え、来場者全員が手元で見るアプリの協賛画面に貴社名が載ります。アプリ内バナーや企業スタンプも準備中です。</p></div></div>
+      <div class="merit"><span class="no">MERIT 03</span><div><h3>協賛の成果が数字で見える</h3><p>来場者数・応援参加率・熱量データをまとめた成果レポートに貴社ロゴを掲載します。社内の協賛報告にそのまま使えます。</p></div></div>
+      <div class="merit"><span class="no">MERIT 04</span><div><h3>貴社の課題を、学生と考える</h3><p>貴社特別賞の設定や、事業課題をVol.2のテーマとして出題できます。実証実験やヒアリングのパートナーとしても関われます。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIZE ============ -->
+<section>
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">PRIZE MONEY</span>
+      <h2>協賛金が、学生の賞金になる。</h2>
+      <p class="lede">賞金は協賛金を原資にしています。集まった額に応じて、入賞チームの賞金が決まります。</p>
+    </div>
+    <table class="prize-tbl rv">
+      <thead><tr><th>協賛の着地額</th><th>1位</th><th>2位</th><th>3位</th></tr></thead>
+      <tbody>
+        <tr><td><b>50万円</b>（目標）</td><td class="led">30万円</td><td class="led">15万円</td><td class="led">5万円</td></tr>
+        <tr><td><b>20万円</b></td><td class="led">10万円</td><td class="led">5万円</td><td class="led">3万円</td></tr>
+      </tbody>
+    </table>
+    <p class="prize-note">協賛企業の副賞（非金銭的な特典）や、会場の応援データに基づくオーディエンス賞も検討しています。収支は成果レポートでご報告します。</p>
+  </div>
+</section>
+
+<!-- ============ PLANS ============ -->
+<section id="plans" style="background:var(--concourse)">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">PLANS</span>
+      <h2>一口1万円から。複数口歓迎です。</h2>
+    </div>
+    <div class="plans rv">
+      <div class="plan">
+        <h3>ノーマル</h3><div class="kuchi">1口</div>
+        <div class="price">¥10,000</div>
+        <ul>
+          <li>スポンサーボードに社名掲示</li>
+          <li>学生司会による企業読み上げ</li>
+          <li>アプリ協賛画面に社名掲示</li>
+        </ul>
+      </div>
+      <div class="plan">
+        <h3>ブロンズ</h3><div class="kuchi">3口</div>
+        <div class="price">¥30,000</div>
+        <ul>
+          <li>ノーマルの内容すべて</li>
+          <li class="plus">成果レポートにロゴ掲載</li>
+        </ul>
+      </div>
+      <div class="plan reco">
+        <span class="reco-tag">おすすめ</span>
+        <h3>シルバー</h3><div class="kuchi">5口</div>
+        <div class="price">¥50,000</div>
+        <ul>
+          <li>ブロンズの内容すべて</li>
+          <li class="plus">受賞チームへの貴社特別賞の設定</li>
+        </ul>
+      </div>
+      <div class="plan">
+        <h3>ゴールド</h3><div class="kuchi">10口</div>
+        <div class="price">¥100,000</div>
+        <ul>
+          <li>シルバーの内容すべて</li>
+          <li class="plus">企業紹介パートでご登壇（<span class="tbd">○分・調整中</span>）</li>
+          <li class="plus">交流会で登壇学生との個別面談</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-2);margin-top:18px" class="rv">特別賞の賞金（<span class="tbd">○円・調整中</span>）は協賛金から充当します。成果レポートには来場者数・応援データの集計・登壇アイデア一覧を掲載します。</p>
+  </div>
+</section>
+
+<!-- ============ AFTER ============ -->
+<section>
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">AFTER THE GAME</span>
+      <h2>試合のあとも、一緒に。</h2>
+      <p class="lede">このイベントは発表後のアイデアの実現を重視しています。ご希望に応じて、次の形でご参画いただけます。</p>
+    </div>
+    <div class="after rv">
+      <div class="card"><h3>メンターとして</h3><p>関心のあるチームに助言をお願いします。オンライン1回からでも可能です。</p></div>
+      <div class="card"><h3>実証・ヒアリング先として</h3><p>学生アイデアの実証実験や、ヒアリング先としてご協力いただけます。</p></div>
+      <div class="card"><h3>Vol.2の出題企業として</h3><p>貴社の事業課題を、次回のテーマとして学生に出題できます。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPLY ============ -->
+<section id="apply" style="padding-top:20px">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="en">HOW TO APPLY</span>
+      <h2>お申込みの流れ</h2>
+    </div>
+    <ol class="flow rv">
+      <li><div><b>お申込み</b><p>申込フォーム（<span class="tbd">公開準備中</span>）またはメールで、<span class="tbd">2026年○月○日</span> までにお申し込みください。</p></div></li>
+      <li><div><b>請求書をお送りします</b><p>お申込み後、<span class="tbd">発行者名義・調整中</span> より請求書をお送りします。</p></div></li>
+      <li><div><b>お振込み</b><p><span class="tbd">○月○日</span> までにお振込みください。領収書を発行できます。</p></div></li>
+      <li><div><b>1月15日、会場でお待ちしています</b><p>中止の場合は全額を返金します。延期の場合はご意向を伺い、継続または返金とします。</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<div class="closing">
+  <div class="wrap">
+    <h2>一口1万円から。<br>学生のピッチを熱気で包むスタジアムを、<br>一緒につくってください。</h2>
+    <div class="cta-row">
+      <a class="btn btn-wh" href="mailto:b250746@hiroshima-u.ac.jp?subject=%E3%80%90%E5%8D%94%E8%B3%9B%E7%9B%B8%E8%AB%87%E3%80%91%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%A2%E3%83%A0%E5%BA%83%E5%B3%B6">メールで問い合わせる</a>
+    </div>
+    <p class="contact">広島大学起業部 副代表 冨岡 雅浩<br><a href="mailto:b250746@hiroshima-u.ac.jp">b250746@hiroshima-u.ac.jp</a></p>
+  </div>
+</div>
+
+<footer>
+  <a href="lp.html">← ビジネススタジアム広島 Vol.1 イベント公式ページ</a><br>
+  © BUSINESS STADIUM HIROSHIMA
+</footer>
+
+<script>
+const io = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

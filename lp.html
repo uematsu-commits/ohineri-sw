@@ -37,28 +37,28 @@ section{position:relative;padding:96px 0}
 .shead h2{font-family:var(--f-display);font-size:clamp(24px,4.4vw,38px);line-height:1.5;letter-spacing:.03em}
 .shead .lede{color:var(--ink-2);font-size:14.5px;margin-top:14px;max-width:640px}
 
-/* ===== HERO ===== */
-.hero{position:relative;overflow:hidden;background:
-  radial-gradient(900px 440px at 88% -10%, var(--red-tint), transparent 60%),
-  radial-gradient(700px 380px at -8% 30%, #fff4cc66, transparent 55%),
-  var(--paper)}
-.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
-  background-image:repeating-linear-gradient(115deg, transparent 0 46px, rgba(28,20,22,.025) 46px 48px)}
-.hero-bar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink-2)}
-.hero-bar .disp{font-size:17px;color:var(--ink)}
-.hero-bar .disp i{font-style:normal;color:var(--red)}
-.hero-bar .led{color:var(--red)}
+/* ===== HERO（カープレッドのベタ×白抜き） ===== */
+.hero{position:relative;overflow:hidden;color:#fff;background:
+  radial-gradient(900px 480px at 85% -12%, rgba(255,255,255,.14), transparent 60%),
+  radial-gradient(760px 420px at -6% 108%, rgba(20,16,18,.28), transparent 60%),
+  linear-gradient(165deg, var(--red) 0%, var(--red) 55%, var(--red-deep) 100%)}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:repeating-linear-gradient(115deg, transparent 0 46px, rgba(255,255,255,.05) 46px 48px)}
+.hero-bar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.28);font-size:12px;color:#ffd9dc}
+.hero-bar .disp{font-size:17px;color:#fff}
+.hero-bar .disp i{font-style:normal;color:var(--led)}
+.hero-bar .led{color:var(--led)}
 .hero-body{position:relative;z-index:2;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;padding:64px 0 58px}
-.seien{writing-mode:vertical-rl;font-family:var(--f-display);font-size:clamp(110px,21vw,210px);line-height:1;letter-spacing:.05em;color:var(--red);
-  text-shadow:6px 6px 0 var(--red-tint);user-select:none}
+.seien{writing-mode:vertical-rl;font-family:var(--f-display);font-size:clamp(110px,21vw,210px);line-height:1;letter-spacing:.05em;color:#fff;
+  text-shadow:7px 7px 0 var(--red-deep);user-select:none}
 .date-row{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
 .date-row .led{font-size:clamp(18px,2.8vw,24px);color:var(--board);background:var(--led);border-radius:6px;padding:4px 14px;letter-spacing:.06em}
-.date-row .fri{font-size:11.5px;border:1.5px solid var(--ink);padding:3px 10px;color:var(--ink);letter-spacing:.2em;font-weight:700}
-h1{font-family:var(--f-display);font-size:clamp(32px,6vw,58px);line-height:1.4;letter-spacing:.02em}
-h1 small{display:block;font-family:var(--f-led);font-size:clamp(12px,1.7vw,15px);letter-spacing:.28em;color:var(--ink-2);margin-top:16px}
-.catch{margin-top:28px;font-size:clamp(15px,2.2vw,17.5px);color:var(--ink-2);max-width:540px}
-.catch b{color:var(--ink);font-weight:900}
-.catch .mk{background:linear-gradient(transparent 62%, #ffe1e3 62%);font-weight:900;color:var(--ink)}
+.date-row .fri{font-size:11.5px;border:1.5px solid #fff;padding:3px 10px;color:#fff;letter-spacing:.2em;font-weight:700}
+h1{font-family:var(--f-display);font-size:clamp(32px,6vw,58px);line-height:1.4;letter-spacing:.02em;color:#fff}
+h1 small{display:block;font-family:var(--f-led);font-size:clamp(12px,1.7vw,15px);letter-spacing:.28em;color:#ffd9dc;margin-top:16px}
+.catch{margin-top:28px;font-size:clamp(15px,2.2vw,17.5px);color:#ffe1e3;max-width:540px}
+.catch b{color:#fff;font-weight:900}
+.catch .mk{background:linear-gradient(transparent 62%, rgba(255,201,40,.45) 62%);font-weight:900;color:#fff}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:38px}
 .btn{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:14.5px;padding:17px 30px;text-decoration:none;letter-spacing:.06em;border-radius:999px;transition:transform .14s,box-shadow .14s}
 .btn:active{transform:scale(.97)}
@@ -66,6 +66,11 @@ h1 small{display:block;font-family:var(--f-led);font-size:clamp(12px,1.7vw,15px)
 .btn-red:hover{background:var(--red-deep);transform:translateY(-2px)}
 .btn-line{color:var(--ink);border:1.5px solid var(--ink)}
 .btn-line:hover{border-color:var(--red);color:var(--red)}
+.btn-hero{background:#fff;color:var(--red);box-shadow:0 10px 26px rgba(20,16,18,.25)}
+.btn-hero:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(20,16,18,.35)}
+.btn-hero-line{color:#fff;border:1.5px solid rgba(255,255,255,.7)}
+.btn-hero-line:hover{border-color:#fff}
+.btn-hero-line .tbd{background:rgba(255,255,255,.92)}
 .hero-note{font-size:12px;color:var(--ink-2);margin-top:14px}
 
 /* 応援ティッカー */
@@ -194,10 +199,10 @@ footer{padding:84px 0 70px;background:var(--concourse);border-top:1px solid var(
       <p class="catch"><span class="mk">広島の学生が、気軽に挑戦を発表できる場所。</span><br>
       学生10〜15チームが動く試作（MVP）を携えて登壇し、<br>観客の<b>声援がスクリーンに流れ込む</b>、参加型のビジコンです。</p>
       <div class="cta-row">
-        <a class="btn btn-red" href="https://claude.ai/artifact/Nan2Aw47mA6qC82TSw4FpR" target="_blank" rel="noopener">協賛のご案内はこちら</a>
-        <a class="btn btn-line" href="#entry">出場・観覧エントリー&nbsp;<span class="tbd">準備中</span></a>
+        <a class="btn btn-hero" href="sponsor.html">協賛のご案内はこちら</a>
+        <a class="btn btn-hero-line" href="#entry">出場・観覧エントリー&nbsp;<span class="tbd">準備中</span></a>
       </div>
-      <p class="hero-note">入場無料・どなたでも観覧いただけます（詳細は近日公開）</p>
+      <p class="hero-note" style="color:#ffd9dc">入場無料・どなたでも観覧いただけます（詳細は近日公開）</p>
     </div>
     <div class="seien">声援</div>
   </div>
@@ -320,7 +325,7 @@ footer{padding:84px 0 70px;background:var(--concourse);border-top:1px solid var(
       </div>
     </div>
     <div class="cta-row rv" style="margin-top:42px">
-      <a class="btn btn-red" href="https://claude.ai/artifact/Nan2Aw47mA6qC82TSw4FpR" target="_blank" rel="noopener">協賛プラン・お申し込みを見る</a>
+      <a class="btn btn-red" href="sponsor.html">協賛プラン・お申し込みを見る</a>
       <a class="btn btn-line" href="mailto:b250746@hiroshima-u.ac.jp?subject=%E3%80%90%E5%8D%94%E8%B3%9B%E7%9B%B8%E8%AB%87%E3%80%91%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%A2%E3%83%A0%E5%BA%83%E5%B3%B6">メールで問い合わせる</a>
     </div>
     <p style="font-size:12px;color:var(--ink-2);margin-top:14px" class="rv">協賛プランの詳細（ノーマル／ブロンズ／シルバー／ゴールド）は協賛専用ページでご案内しています。</p>
@@ -341,7 +346,7 @@ footer{padding:84px 0 70px;background:var(--concourse);border-top:1px solid var(
       <tr><th>会場</th><td>ヒロマラボ（広島市）</td></tr>
       <tr><th>主催</th><td>広島大学起業部</td></tr>
       <tr><th>運営協力</th><td>チームピッチャー（Startup Weekend 広島 2026 スポンサー賞受賞チーム）</td></tr>
-      <tr><th>協賛・後援</th><td>募集中（確定次第掲載）／<a href="https://claude.ai/artifact/Nan2Aw47mA6qC82TSw4FpR" target="_blank" rel="noopener">協賛のご案内</a></td></tr>
+      <tr><th>協賛・後援</th><td>募集中（確定次第掲載）／<a href="sponsor.html">協賛のご案内</a></td></tr>
       <tr><th>登壇</th><td>学生10〜15チーム（県内外・オンライン参加も予定）</td></tr>
       <tr><th>参加費</th><td>無料</td></tr>
       <tr><th>お問い合わせ</th><td>広島大学起業部　冨岡 雅浩<br><a href="mailto:b250746@hiroshima-u.ac.jp">b250746@hiroshima-u.ac.jp</a></td></tr>
